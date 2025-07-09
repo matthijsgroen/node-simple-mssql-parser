@@ -193,6 +193,13 @@ describe("parsing select statements", () => {
               ]
             `);
     });
+
+    it("reports an error for an invalid selection clause", () => {
+      const sql = "SELECT columnA columnB columnC FROM [dbo].[users];";
+      expect(() => parseMSSQLStatement(sql)).toThrowError(
+        'Expected "as" or "from" but "c" found.',
+      );
+    });
   });
 
   describe("from clause", () => {

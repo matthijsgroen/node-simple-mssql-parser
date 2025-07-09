@@ -20,7 +20,7 @@ select_statement
   = source:select_source WS "as"i WS alias:identifier { return { kind: "select-source", source, alias } }
   / source:select_source { return { kind: "select-source", source, alias: null } }
 
-column_name
+column_name "column"
   = alias:identifier "." column:identifier { return { kind: "column", alias, column } }
   / column:identifier { return { kind: "column", alias: null, column } }
   / "*" { return { kind: "literal", type: "wildcard" } }
