@@ -1,10 +1,32 @@
 {
   "name": "node-simple-mssql-parser",
-  "version": "1.0.0-alpha.1",
-  "description": "A simple parser for MSSQL queries in Node.js",
+  "version": "1.0.1",
+  "description": "A simple, lightweight parser for MSSQL (T-SQL) SELECT and INSERT statements in Node.js. Parses SQL to AST and provides traversal utilities.",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "keywords": [
+    "mssql",
+    "sql",
+    "parser",
+    "ast",
+    "typescript",
+    "nodejs",
+    "tsql",
+    "traverse",
+    "select",
+    "insert"
+  ],
+  "homepage": "https://github.com/matthijsgroen/node-simple-mssql-parser#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthijsgroen/node-simple-mssql-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/matthijsgroen/node-simple-mssql-parser/issues"
+  },
+  "author": "Matthijs Groen <matthijs.groen@gmail.com>",
+  "license": "MIT",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
