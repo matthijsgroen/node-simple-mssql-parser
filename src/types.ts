@@ -6,11 +6,13 @@ export type SelectStatementNode = {
     from: TableSourceNode;
     joins: JoinNode[] | null;
     where: ConditionNode | null;
+    groupBy: ColumnNode[] | null;
+    orderBy: ColumnOrderNode[] | null;
 };
 
 export type SelectSourceNode = {
     kind: 'select-source';
-    source: ColumnNode | FunctionNode;
+    source: ColumnNode | WildcardNode | FunctionNode;
     alias: IdentifierNode | null;
 };
 
@@ -25,14 +27,20 @@ export type ColumnNode = {
     kind: 'column';
     name: IdentifierNode;
     alias: IdentifierNode | null;
-} | WildcardNode;
+} 
+
+export type ColumnOrderNode = {
+    kind: 'order';
+    column: ColumnNode;
+    direction: 'asc' | 'desc';
+};
 
 export type FunctionNode = CountFunctionNode
 
 export type CountFunctionNode = {
     kind: 'function';
     name: "count";
-    args: ColumnNode[];
+    args: [ColumnNode | WildcardNode];
 };
 
 export type JoinNode = {

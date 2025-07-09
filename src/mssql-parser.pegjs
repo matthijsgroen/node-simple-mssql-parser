@@ -7,11 +7,11 @@ select
      joins:(joins)?
      where:(where)?
      groupBy:(group)?
-     order:(order)?
+     orderBy:(order)?
      offset:(offset)?
      limit:(limit)?
      ";"
-     { return { kind: "select", select, from, joins, where, groupBy, order, offset, limit } }
+     { return { kind: "select", select, from, joins, where, groupBy, orderBy, offset, limit } }
    
 selection 
   = select_statement|1.., "," WS |
@@ -58,12 +58,16 @@ join = WS type:joinType? "join"i
 
 where = WS "where"i WS c:conditions { return { kind: "where", condition:c } }
 
-group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return { kind: "group-by", columns: c } }
+group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return c }
 
-order = WS "order"i WS "by"i WS c:(column_sorting|1.., "," WS |) { return { kind: "order", columns: c } }
+order = WS "order"i WS "by"i WS c:(column_sorting|1.., "," WS |) { return c }
+
+orderDirection
+  = "asc"i { return "asc" }
+  / "desc"i { return "desc" }
 
 column_sorting 
-  = c:column_name WS d:"desc"i? a:"asc"i? { return { kind: "sorting", column: c, direction: d ? "desc" : a ? "asc" : null } }
+  = c:column_name direction:(WS d:orderDirection { return d })? { return { kind: "order", column: c, direction: direction ?? "asc" } }
 
 conditions
   = "(" WS? c:conditions WS? ")" { return c }
@@ -110,5 +114,6 @@ keyword
   / "group"i
   / "top"i
   / "next"i
+  / "order"i
 
 WS "whitespace" = [ \t\n]+
