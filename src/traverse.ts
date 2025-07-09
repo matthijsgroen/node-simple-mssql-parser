@@ -1,11 +1,4 @@
-import {
-  SelectSourceNode,
-  ColumnNode,
-  ColumnOrderNode,
-  JoinNode,
-  WildcardNode,
-  SyntaxNode,
-} from "./types";
+import { SyntaxNode } from "./types";
 
 export type Visitor<T = void> = {
   enter?: (node: SyntaxNode, parent: SyntaxNode | null) => T | void;
@@ -23,71 +16,60 @@ export function traverse<T = void>(
   switch (node.kind) {
     case "select": {
       // SelectStatementNode
-      (node.select as SelectSourceNode[]).forEach((child) =>
-        traverse(child, visitor, node),
-      );
+      node.select.forEach((child) => traverse(child, visitor, node));
       traverse(node.from, visitor, node);
-      if (node.joins)
-        (node.joins as JoinNode[]).forEach((j) => traverse(j, visitor, node));
+      if (node.joins) node.joins.forEach((j) => traverse(j, visitor, node));
       if (node.where) traverse(node.where, visitor, node);
-      if (node.groupBy)
-        (node.groupBy as ColumnNode[]).forEach((g) =>
-          traverse(g, visitor, node),
-        );
-      if (node.orderBy)
-        (node.orderBy as ColumnOrderNode[]).forEach((o) =>
-          traverse(o, visitor, node),
-        );
+      if (node.groupBy) node.groupBy.forEach((g) => traverse(g, visitor, node));
+      if (node.orderBy) node.orderBy.forEach((o) => traverse(o, visitor, node));
       if (node.offset) traverse(node.offset, visitor, node);
       if (node.limit) traverse(node.limit, visitor, node);
       break;
     }
+    case "insert": {
+      traverse(node.target, visitor, node);
+      node.columns.forEach((col) => traverse(col, visitor, node));
+      traverse(node.values, visitor, node);
+      if (node.output)
+        node.output.forEach((col) => traverse(col, visitor, node));
+      break;
+    }
+    case "values": {
+      node.values.forEach((val) => traverse(val, visitor, node));
+      break;
+    }
     case "select-source": {
-      // SelectSourceNode
       traverse(node.source, visitor, node);
       if (node.alias) traverse(node.alias, visitor, node);
       break;
     }
     case "table-source": {
-      // TableSourceNode
       traverse(node.db, visitor, node);
       traverse(node.table, visitor, node);
       if (node.alias) traverse(node.alias, visitor, node);
       break;
     }
     case "column": {
-      // ColumnNode
       traverse(node.name, visitor, node);
       if (node.alias) traverse(node.alias, visitor, node);
       break;
     }
     case "order": {
-      // ColumnOrderNode
       traverse(node.column, visitor, node);
       break;
     }
     case "function": {
-      // FunctionNode
-      (node.args as (ColumnNode | WildcardNode)[]).forEach((arg: any) =>
-        traverse(arg, visitor, node),
-      );
+      node.args.forEach((arg: any) => traverse(arg, visitor, node));
       break;
     }
     case "join": {
-      // JoinNode
       traverse(node.table, visitor, node);
       traverse(node.condition, visitor, node);
       break;
     }
     case "condition": {
-      // EqualityConditionNode | LogicalConditionNode
-      if (node.type === "equality") {
-        traverse(node.left, visitor, node);
-        traverse(node.right, visitor, node);
-      } else if (node.type === "and" || node.type === "or") {
-        traverse(node.left, visitor, node);
-        traverse(node.right, visitor, node);
-      }
+      traverse(node.left, visitor, node);
+      traverse(node.right, visitor, node);
       break;
     }
     case "literal": {

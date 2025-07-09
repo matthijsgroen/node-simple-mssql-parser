@@ -97,4 +97,57 @@ describe("traverse", () => {
     });
     expect(columns).toEqual(["foo", "bar"]);
   });
+
+  it("visits all nodes in an insert statement", () => {
+    const ast: StatementNode = {
+      kind: "insert",
+      target: {
+        kind: "table-source",
+        db: { kind: "identifier", name: "dbo" },
+        table: { kind: "identifier", name: "users" },
+        alias: null,
+      },
+      columns: [
+        {
+          kind: "column",
+          name: { kind: "identifier", name: "name" },
+          alias: null,
+        },
+        {
+          kind: "column",
+          name: { kind: "identifier", name: "age" },
+          alias: null,
+        },
+      ],
+      values: {
+        kind: "values",
+        values: [
+          { kind: "literal", type: "string", value: "Alice" },
+          { kind: "literal", type: "number", value: 30 },
+        ],
+      },
+      output: null,
+    };
+
+    const visitedNodes: string[] = [];
+    traverse(ast, {
+      enter(node) {
+        visitedNodes.push(node.kind);
+      },
+    });
+
+    expect(visitedNodes).toEqual([
+      "insert",
+      "table-source",
+      "identifier",
+      "identifier",
+      "column",
+      "identifier",
+      "column",
+      "identifier",
+      "values",
+      "literal",
+      "literal",
+    ]);
+  });
 });

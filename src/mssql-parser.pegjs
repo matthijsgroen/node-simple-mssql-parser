@@ -1,5 +1,5 @@
 sql
-  = WS? st:select WS? { return st }
+  = WS? st:(select / insert) WS? { return st }
 
 select
    = "select"i WS select:selection 
@@ -12,9 +12,28 @@ select
      limit:(limit)?
      ";"
      { return { kind: "select", select, from, joins, where, groupBy, orderBy, offset, limit } }
-   
+
+insert
+  = "insert"i WS "into"i WS target:table_source
+  WS "(" columns:insert_columns WS? ")"
+  output:(output)?
+  values:(values)
+  ";"
+  { return { kind: "insert", target, columns: columns.map(c => ({ kind: "column", alias: null, column: c })), output, values } }
+
+insert_columns
+  = (WS? column:identifier { return column })|1.., "," WS?|
+
+values
+  = WS "values"i WS? "(" values:(WS? value:insert_value { return value })|1.., "," WS?| WS? ")" { return { kind: "values", values } }
+
+insert_value
+  = input
+  / literal
+  / "NEWID()" { return { kind: "function", name: "newid", args: [] } }
+
 selection 
-  = select_statement|1.., "," WS |
+  = select_statement|1.., "," WS?|
    
 select_statement 
   = source:select_source WS "as"i WS alias:identifier { return { kind: "select-source", source, alias } }
@@ -61,6 +80,8 @@ where = WS "where"i WS c:conditions { return { kind: "where", condition:c } }
 group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return c }
 
 order = WS "order"i WS "by"i WS c:(column_sorting|1.., "," WS |) { return c }
+
+output = WS "output"i WS c:(column_name|1.., "," WS |) { return c }
 
 orderDirection
   = "asc"i { return "asc" }
@@ -116,5 +137,6 @@ keyword
   / "fetch"i
   / "next"i
   / "order"i
+  / "output"i
 
 WS "whitespace" = [ \t\n]+

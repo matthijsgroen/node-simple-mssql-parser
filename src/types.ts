@@ -12,9 +12,12 @@ export type SyntaxNode =
   | LiteralNode
   | InputNode
   | OffsetNode
-  | LimitNode;
+  | LimitNode
+  | InsertStatementNode
+  | ValuesNode
+  | NewIdNode;
 
-export type StatementNode = SelectStatementNode;
+export type StatementNode = SelectStatementNode | InsertStatementNode;
 
 export type SelectStatementNode = {
   kind: "select";
@@ -82,6 +85,25 @@ export type LogicalConditionNode = {
   type: "and" | "or";
   left: ConditionNode;
   right: ConditionNode;
+};
+
+export type InsertStatementNode = {
+  kind: "insert";
+  target: TableSourceNode;
+  columns: ColumnNode[];
+  values: ValuesNode;
+  output: ColumnNode[] | null;
+};
+
+export type ValuesNode = {
+  kind: "values";
+  values: (LiteralNode | InputNode | NewIdNode)[];
+};
+
+export type NewIdNode = {
+  kind: "function";
+  name: "newid";
+  args: [];
 };
 
 export type WildcardNode = {

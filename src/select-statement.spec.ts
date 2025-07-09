@@ -1,10 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { parseMSSQLStatement } from "./index";
+import { SelectStatementNode } from "./types";
 
-describe("parsing select statements", () => {
+describe("parsing select statement", () => {
+  const parseSelectStatement = (sql: string) =>
+    parseMSSQLStatement(sql) as SelectStatementNode;
+
   it("parses a simple select statement", () => {
     const sql = "SELECT * FROM [dbo].[users];";
-    const result = parseMSSQLStatement(sql);
+    const result = parseSelectStatement(sql);
     expect(result).toMatchInlineSnapshot(`
           {
             "from": {
@@ -43,7 +47,7 @@ describe("parsing select statements", () => {
   describe("selection clause", () => {
     it("parses a selection clause with multiple columns", () => {
       const sql = "SELECT id, name FROM [dbo].[users];";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
               [
                 {
@@ -76,7 +80,7 @@ describe("parsing select statements", () => {
 
     it("parses a selection clause columns from aliases", () => {
       const sql = "SELECT users.id, users.name FROM [dbo].[users] users;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
               [
                 {
@@ -115,7 +119,7 @@ describe("parsing select statements", () => {
 
     it("parses a selection clause with an alias", () => {
       const sql = "SELECT id AS user_id FROM [dbo].[users];";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
               [
                 {
@@ -139,7 +143,7 @@ describe("parsing select statements", () => {
 
     it("parses a selection clause with a function", () => {
       const sql = "SELECT COUNT(*) FROM [dbo].[users];";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
               [
                 {
@@ -163,7 +167,7 @@ describe("parsing select statements", () => {
     it("parses a selection clause with a function", () => {
       const sql =
         "SELECT COUNT(message.likes) as num_likes FROM [dbo].[users];";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
               [
                 {
@@ -196,7 +200,7 @@ describe("parsing select statements", () => {
 
     it("reports an error for an invalid selection clause", () => {
       const sql = "SELECT columnA columnB columnC FROM [dbo].[users];";
-      expect(() => parseMSSQLStatement(sql)).toThrowError(
+      expect(() => parseSelectStatement(sql)).toThrowError(
         'Expected "as" or "from" but "c" found.',
       );
     });
@@ -205,7 +209,7 @@ describe("parsing select statements", () => {
   describe("from clause", () => {
     it("parses a from clause with a table", () => {
       const sql = "SELECT * FROM [dbo].[users];";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.from).toMatchInlineSnapshot(`
               {
                 "alias": null,
@@ -224,7 +228,7 @@ describe("parsing select statements", () => {
 
     it("parses a from clause with an alias", () => {
       const sql = "SELECT * FROM [dbo].[users] u;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.from).toMatchInlineSnapshot(`
               {
                 "alias": {
@@ -249,7 +253,7 @@ describe("parsing select statements", () => {
     it("parses a join clause", () => {
       const sql =
         "SELECT * FROM [dbo].[users] u JOIN [dbo].[posts] p ON u.id = p.user_id;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
@@ -304,7 +308,7 @@ describe("parsing select statements", () => {
     it("parses a left join clause", () => {
       const sql =
         "SELECT * FROM [dbo].[users] u LEFT JOIN [dbo].[posts] p ON u.id = p.user_id;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
@@ -359,7 +363,7 @@ describe("parsing select statements", () => {
     it("parses a right join clause", () => {
       const sql =
         "SELECT * FROM [dbo].[users] u RIGHT JOIN [dbo].[posts] p ON u.id = p.user_id;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
@@ -415,7 +419,7 @@ describe("parsing select statements", () => {
   describe("where clause", () => {
     it("parses a where clause with a simple condition", () => {
       const sql = "SELECT * FROM [dbo].[users] WHERE id = null;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.where).toMatchInlineSnapshot(`
               {
                 "condition": {
@@ -442,7 +446,7 @@ describe("parsing select statements", () => {
     it("parses a where clause with a complex condition", () => {
       const sql =
         "SELECT * FROM [dbo].[users] WHERE id = 5 AND (a.b = @input OR columnName2 = 'hello');";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.where).toMatchInlineSnapshot(`
               {
                 "condition": {
@@ -515,7 +519,7 @@ describe("parsing select statements", () => {
   describe("group by clause", () => {
     it("parses a group by clause with a single column", () => {
       const sql = "SELECT * FROM [dbo].[users] GROUP BY id;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.groupBy).toMatchInlineSnapshot(`
               [
                 {
@@ -532,7 +536,7 @@ describe("parsing select statements", () => {
 
     it("parses a group by clause with multiple columns", () => {
       const sql = "SELECT * FROM [dbo].[users] GROUP BY id, name;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.groupBy).toMatchInlineSnapshot(`
               [
                 {
@@ -559,7 +563,7 @@ describe("parsing select statements", () => {
   describe("order by clause", () => {
     it("parses an order by clause with a single column", () => {
       const sql = "SELECT * FROM [dbo].[users] ORDER BY id;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.orderBy).toMatchInlineSnapshot(`
               [
                 {
@@ -580,7 +584,7 @@ describe("parsing select statements", () => {
 
     it("parses an order by clause with multiple columns", () => {
       const sql = "SELECT * FROM [dbo].[users] ORDER BY id, name DESC;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.orderBy).toMatchInlineSnapshot(`
               [
                 {
@@ -615,7 +619,7 @@ describe("parsing select statements", () => {
   describe("offset and limit", () => {
     it("parses an offset clause", () => {
       const sql = "SELECT * FROM [dbo].[users] OFFSET 10 ROWS;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.offset).toMatchInlineSnapshot(`
               {
                 "kind": "offset",
@@ -630,7 +634,7 @@ describe("parsing select statements", () => {
 
     it("parses a limit clause", () => {
       const sql = "SELECT * FROM [dbo].[users] FETCH NEXT 5 ROWS ONLY;";
-      const result = parseMSSQLStatement(sql);
+      const result = parseSelectStatement(sql);
       expect(result.limit).toMatchInlineSnapshot(`
               {
                 "kind": "limit",
