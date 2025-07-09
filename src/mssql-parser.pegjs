@@ -112,7 +112,8 @@ keyword
   / "from"i
   / "join"i
   / "group"i
-  / "top"i
+  / "offset"i
+  / "fetch"i
   / "next"i
   / "order"i
 

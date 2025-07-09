@@ -8,6 +8,8 @@ export type SelectStatementNode = {
     where: ConditionNode | null;
     groupBy: ColumnNode[] | null;
     orderBy: ColumnOrderNode[] | null;
+    offset: OffsetNode | null;
+    limit: LimitNode | null;
 };
 
 export type SelectSourceNode = {
@@ -99,3 +101,13 @@ export type InputNode = {
     kind: 'input';
     identifier: string;
 };
+
+export type OffsetNode = {
+    kind: 'offset';
+    rows: NumberLiteralNode | InputNode;
+}
+
+export type LimitNode = {
+    kind: 'limit';
+    rows: NumberLiteralNode | InputNode;
+}

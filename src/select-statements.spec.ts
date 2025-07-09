@@ -600,4 +600,36 @@ describe("parsing select statements", () => {
             `);
         });
     });
+
+    describe("offset and limit", () => {
+        it("parses an offset clause", () => {
+            const sql = "SELECT * FROM [dbo].[users] OFFSET 10 ROWS;";
+            const result = parseMSSQLStatement(sql);
+            expect(result.offset).toMatchInlineSnapshot(`
+              {
+                "kind": "offset",
+                "rows": {
+                  "kind": "literal",
+                  "type": "number",
+                  "value": 10,
+                },
+              }
+            `);
+        });
+
+        it("parses a limit clause", () => {
+            const sql = "SELECT * FROM [dbo].[users] FETCH NEXT 5 ROWS ONLY;";
+            const result = parseMSSQLStatement(sql);
+            expect(result.limit).toMatchInlineSnapshot(`
+              {
+                "kind": "limit",
+                "rows": {
+                  "kind": "literal",
+                  "type": "number",
+                  "value": 5,
+                },
+              }
+            `);
+        });
+    });
 });
