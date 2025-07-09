@@ -389,4 +389,103 @@ describe("parsing select statements", () => {
             `);
         });
     });
+
+    describe("where clause", () => {
+        it("parses a where clause with a simple condition", () => {
+            const sql = "SELECT * FROM [dbo].[users] WHERE id = null;";
+            const result = parse(sql);
+            expect(result.where).toMatchInlineSnapshot(`
+              {
+                "condition": {
+                  "a": {
+                    "alias": null,
+                    "column": {
+                      "kind": "identifier",
+                      "name": "id",
+                    },
+                    "kind": "column",
+                  },
+                  "b": {
+                    "kind": "literal",
+                    "type": "null",
+                  },
+                  "kind": "condition",
+                  "type": "equality",
+                },
+                "kind": "where",
+              }
+            `);
+        });
+
+        it("parses a where clause with a complex condition", () => {
+            const sql = "SELECT * FROM [dbo].[users] WHERE id = 5 AND (a.b = @input OR columnName2 = 'hello');";
+            const result = parse(sql);
+            expect(result.where).toMatchInlineSnapshot(`
+              {
+                "condition": {
+                  "a": {
+                    "a": {
+                      "alias": null,
+                      "column": {
+                        "kind": "identifier",
+                        "name": "id",
+                      },
+                      "kind": "column",
+                    },
+                    "b": {
+                      "kind": "literal",
+                      "type": "number",
+                      "value": 5,
+                    },
+                    "kind": "condition",
+                    "type": "equality",
+                  },
+                  "b": {
+                    "a": {
+                      "a": {
+                        "alias": {
+                          "kind": "identifier",
+                          "name": "a",
+                        },
+                        "column": {
+                          "kind": "identifier",
+                          "name": "b",
+                        },
+                        "kind": "column",
+                      },
+                      "b": {
+                        "identifier": "input",
+                        "kind": "input",
+                      },
+                      "kind": "condition",
+                      "type": "equality",
+                    },
+                    "b": {
+                      "a": {
+                        "alias": null,
+                        "column": {
+                          "kind": "identifier",
+                          "name": "columnName2",
+                        },
+                        "kind": "column",
+                      },
+                      "b": {
+                        "kind": "literal",
+                        "type": "string",
+                        "value": "hello",
+                      },
+                      "kind": "condition",
+                      "type": "equality",
+                    },
+                    "kind": "condition",
+                    "type": "or",
+                  },
+                  "kind": "condition",
+                  "type": "and",
+                },
+                "kind": "where",
+              }
+            `);
+        });
+    });
 });

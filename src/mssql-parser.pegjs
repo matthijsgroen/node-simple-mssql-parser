@@ -50,7 +50,7 @@ join = WS left:("left"i WS)? right:("right"i WS)? "join"i
     left: a, right: b
   } }
 
-where = WS "where"i WS c:condition { return { kind: "where", condition:c } }
+where = WS "where"i WS c:conditions { return { kind: "where", condition:c } }
 
 group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return { kind: "group", columns: c } }
 
@@ -60,7 +60,7 @@ column_sorting
   = c:column_name WS d:"desc"i? a:"asc"i? { return { kind: "sorting", column: c, direction: d ? "desc" : a ? "asc" : null } }
 
 conditions
-  = "(" WS c:conditions WS ")" { return c }
+  = "(" WS? c:conditions WS? ")" { return c }
   / a:condition WS "and"i WS b:conditions { return { kind: "condition", type: "and", a, b } }
   / a:condition WS "or"i WS b:conditions { return { kind: "condition", type: "or", a, b } }
   / condition
@@ -69,9 +69,7 @@ condition
   = equality_condition
   
 equality_condition
-  = a:column_name WS "=" WS b:column_name { return { kind: "condition", a, b, type: "equality" } }
-  / a:column_name WS "=" WS b:literal { return { kind: "condition", a, b, type: "equality" } }
-  / a:column_name WS "=" WS b:input { return { kind: "condition", a, b, type: "equality" } }
+  = a:column_name WS "=" WS b:(literal / input / column_name) { return { kind: "condition", a, b, type: "equality" } }
 
 offset
   = WS "offset"i WS input:(input / number) WS "rows"i { return { kind: "offset", rows: input } }
@@ -85,6 +83,7 @@ input
 literal
   = null
   / number
+  / string
   
 null
   = "null"i { return { kind: "literal", type: "null" } }
@@ -92,7 +91,18 @@ null
 number
   = n:$[0-9]+ { return { kind: "literal", type: "number", value: parseInt(n) } }
 
+string
+  = "'" value:$([^']+) "'" { return { kind: "literal", type: "string", value } }
+
 identifier
-  = $[A-Za-z_][A-Za-z0-9_]* { return { kind: "identifier", name: text() } }
-  
-WS = [ \t\n]+
+  = !keyword $[A-Za-z_][A-Za-z0-9_]* { return { kind: "identifier", name: text() } }
+
+keyword
+  = "where"i
+  / "from"i
+  / "join"i
+  / "group"i
+  / "top"i
+  / "next"i
+
+WS "whitespace" = [ \t\n]+
