@@ -289,5 +289,104 @@ describe("parsing select statements", () => {
             `);
         });
 
+        it("parses a left join clause", () => {
+            const sql = "SELECT * FROM [dbo].[users] u LEFT JOIN [dbo].[posts] p ON u.id = p.user_id;";
+            const result = parse(sql);
+            expect(result.joins).toMatchInlineSnapshot(`
+              [
+                {
+                  "direction": "left",
+                  "kind": "join",
+                  "left": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "u",
+                    },
+                    "column": {
+                      "kind": "identifier",
+                      "name": "id",
+                    },
+                    "kind": "column",
+                  },
+                  "right": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "p",
+                    },
+                    "column": {
+                      "kind": "identifier",
+                      "name": "user_id",
+                    },
+                    "kind": "column",
+                  },
+                  "source": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "p",
+                    },
+                    "db": {
+                      "kind": "identifier",
+                      "name": "dbo",
+                    },
+                    "kind": "table",
+                    "table": {
+                      "kind": "identifier",
+                      "name": "posts",
+                    },
+                  },
+                },
+              ]
+            `);
+        });
+
+        it("parses a right join clause", () => {
+            const sql = "SELECT * FROM [dbo].[users] u RIGHT JOIN [dbo].[posts] p ON u.id = p.user_id;";
+            const result = parse(sql);
+            expect(result.joins).toMatchInlineSnapshot(`
+              [
+                {
+                  "direction": "right",
+                  "kind": "join",
+                  "left": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "u",
+                    },
+                    "column": {
+                      "kind": "identifier",
+                      "name": "id",
+                    },
+                    "kind": "column",
+                  },
+                  "right": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "p",
+                    },
+                    "column": {
+                      "kind": "identifier",
+                      "name": "user_id",
+                    },
+                    "kind": "column",
+                  },
+                  "source": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "p",
+                    },
+                    "db": {
+                      "kind": "identifier",
+                      "name": "dbo",
+                    },
+                    "kind": "table",
+                    "table": {
+                      "kind": "identifier",
+                      "name": "posts",
+                    },
+                  },
+                },
+              ]
+            `);
+        });
     });
 });
