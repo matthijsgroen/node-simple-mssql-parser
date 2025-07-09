@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { parseMSSQLStatement } from "./index"
+import { parseMSSQLStatement } from "./index";
 
 describe("parsing select statements", () => {
-    it("parses a simple select statement", () => {
-        const sql = "SELECT * FROM [dbo].[users];";
-        const result = parseMSSQLStatement(sql);
-        expect(result).toMatchInlineSnapshot(`
+  it("parses a simple select statement", () => {
+    const sql = "SELECT * FROM [dbo].[users];";
+    const result = parseMSSQLStatement(sql);
+    expect(result).toMatchInlineSnapshot(`
           {
             "from": {
               "alias": null,
@@ -38,46 +38,46 @@ describe("parsing select statements", () => {
             "where": null,
           }
         `);
+  });
+
+  describe("selection clause", () => {
+    it("parses a selection clause with multiple columns", () => {
+      const sql = "SELECT id, name FROM [dbo].[users];";
+      const result = parseMSSQLStatement(sql);
+      expect(result.select).toMatchInlineSnapshot(`
+              [
+                {
+                  "alias": null,
+                  "kind": "select-source",
+                  "source": {
+                    "alias": null,
+                    "column": {
+                      "kind": "identifier",
+                      "name": "id",
+                    },
+                    "kind": "column",
+                  },
+                },
+                {
+                  "alias": null,
+                  "kind": "select-source",
+                  "source": {
+                    "alias": null,
+                    "column": {
+                      "kind": "identifier",
+                      "name": "name",
+                    },
+                    "kind": "column",
+                  },
+                },
+              ]
+            `);
     });
 
-    describe("selection clause", () => {
-        it("parses a selection clause with multiple columns", () => {
-            const sql = "SELECT id, name FROM [dbo].[users];";
-            const result = parseMSSQLStatement(sql);
-            expect(result.select).toMatchInlineSnapshot(`
-              [
-                {
-                  "alias": null,
-                  "kind": "select-source",
-                  "source": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                },
-                {
-                  "alias": null,
-                  "kind": "select-source",
-                  "source": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "name",
-                    },
-                    "kind": "column",
-                  },
-                },
-              ]
-            `)
-        });
-
-        it("parses a selection clause columns from aliases", () => {
-            const sql = "SELECT users.id, users.name FROM [dbo].[users] users;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.select).toMatchInlineSnapshot(`
+    it("parses a selection clause columns from aliases", () => {
+      const sql = "SELECT users.id, users.name FROM [dbo].[users] users;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.select).toMatchInlineSnapshot(`
               [
                 {
                   "alias": null,
@@ -110,13 +110,13 @@ describe("parsing select statements", () => {
                   },
                 },
               ]
-            `)
-        });
+            `);
+    });
 
-        it("parses a selection clause with an alias", () => {
-            const sql = "SELECT id AS user_id FROM [dbo].[users];";
-            const result = parseMSSQLStatement(sql);
-            expect(result.select).toMatchInlineSnapshot(`
+    it("parses a selection clause with an alias", () => {
+      const sql = "SELECT id AS user_id FROM [dbo].[users];";
+      const result = parseMSSQLStatement(sql);
+      expect(result.select).toMatchInlineSnapshot(`
               [
                 {
                   "alias": {
@@ -135,12 +135,12 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
 
-        it("parses a selection clause with a function", () => {
-            const sql = "SELECT COUNT(*) FROM [dbo].[users];";
-            const result = parseMSSQLStatement(sql);
-            expect(result.select).toMatchInlineSnapshot(`
+    it("parses a selection clause with a function", () => {
+      const sql = "SELECT COUNT(*) FROM [dbo].[users];";
+      const result = parseMSSQLStatement(sql);
+      expect(result.select).toMatchInlineSnapshot(`
               [
                 {
                   "alias": null,
@@ -158,12 +158,13 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
 
-        it("parses a selection clause with a function", () => {
-            const sql = "SELECT COUNT(message.likes) as num_likes FROM [dbo].[users];";
-            const result = parseMSSQLStatement(sql);
-            expect(result.select).toMatchInlineSnapshot(`
+    it("parses a selection clause with a function", () => {
+      const sql =
+        "SELECT COUNT(message.likes) as num_likes FROM [dbo].[users];";
+      const result = parseMSSQLStatement(sql);
+      expect(result.select).toMatchInlineSnapshot(`
               [
                 {
                   "alias": {
@@ -191,15 +192,14 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
+  });
 
-    })
-
-    describe("from clause", () => {
-        it("parses a from clause with a table", () => {
-            const sql = "SELECT * FROM [dbo].[users];";
-            const result = parseMSSQLStatement(sql);
-            expect(result.from).toMatchInlineSnapshot(`
+  describe("from clause", () => {
+    it("parses a from clause with a table", () => {
+      const sql = "SELECT * FROM [dbo].[users];";
+      const result = parseMSSQLStatement(sql);
+      expect(result.from).toMatchInlineSnapshot(`
               {
                 "alias": null,
                 "db": {
@@ -213,12 +213,12 @@ describe("parsing select statements", () => {
                 },
               }
             `);
-        });
+    });
 
-        it("parses a from clause with an alias", () => {
-            const sql = "SELECT * FROM [dbo].[users] u;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.from).toMatchInlineSnapshot(`
+    it("parses a from clause with an alias", () => {
+      const sql = "SELECT * FROM [dbo].[users] u;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.from).toMatchInlineSnapshot(`
               {
                 "alias": {
                   "kind": "identifier",
@@ -235,14 +235,15 @@ describe("parsing select statements", () => {
                 },
               }
             `);
-        });
     });
+  });
 
-    describe("joins", () => {
-        it("parses a join clause", () => {
-            const sql = "SELECT * FROM [dbo].[users] u JOIN [dbo].[posts] p ON u.id = p.user_id;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.joins).toMatchInlineSnapshot(`
+  describe("joins", () => {
+    it("parses a join clause", () => {
+      const sql =
+        "SELECT * FROM [dbo].[users] u JOIN [dbo].[posts] p ON u.id = p.user_id;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
                   "condition": {
@@ -291,12 +292,13 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
 
-        it("parses a left join clause", () => {
-            const sql = "SELECT * FROM [dbo].[users] u LEFT JOIN [dbo].[posts] p ON u.id = p.user_id;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.joins).toMatchInlineSnapshot(`
+    it("parses a left join clause", () => {
+      const sql =
+        "SELECT * FROM [dbo].[users] u LEFT JOIN [dbo].[posts] p ON u.id = p.user_id;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
                   "condition": {
@@ -345,12 +347,13 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
 
-        it("parses a right join clause", () => {
-            const sql = "SELECT * FROM [dbo].[users] u RIGHT JOIN [dbo].[posts] p ON u.id = p.user_id;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.joins).toMatchInlineSnapshot(`
+    it("parses a right join clause", () => {
+      const sql =
+        "SELECT * FROM [dbo].[users] u RIGHT JOIN [dbo].[posts] p ON u.id = p.user_id;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
                   "condition": {
@@ -399,14 +402,14 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
     });
+  });
 
-    describe("where clause", () => {
-        it("parses a where clause with a simple condition", () => {
-            const sql = "SELECT * FROM [dbo].[users] WHERE id = null;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.where).toMatchInlineSnapshot(`
+  describe("where clause", () => {
+    it("parses a where clause with a simple condition", () => {
+      const sql = "SELECT * FROM [dbo].[users] WHERE id = null;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.where).toMatchInlineSnapshot(`
               {
                 "condition": {
                   "kind": "condition",
@@ -427,12 +430,13 @@ describe("parsing select statements", () => {
                 "kind": "where",
               }
             `);
-        });
+    });
 
-        it("parses a where clause with a complex condition", () => {
-            const sql = "SELECT * FROM [dbo].[users] WHERE id = 5 AND (a.b = @input OR columnName2 = 'hello');";
-            const result = parseMSSQLStatement(sql);
-            expect(result.where).toMatchInlineSnapshot(`
+    it("parses a where clause with a complex condition", () => {
+      const sql =
+        "SELECT * FROM [dbo].[users] WHERE id = 5 AND (a.b = @input OR columnName2 = 'hello');";
+      const result = parseMSSQLStatement(sql);
+      expect(result.where).toMatchInlineSnapshot(`
               {
                 "condition": {
                   "kind": "condition",
@@ -498,14 +502,14 @@ describe("parsing select statements", () => {
                 "kind": "where",
               }
             `);
-        });
     });
+  });
 
-    describe("group by clause", () => {
-        it("parses a group by clause with a single column", () => {
-            const sql = "SELECT * FROM [dbo].[users] GROUP BY id;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.groupBy).toMatchInlineSnapshot(`
+  describe("group by clause", () => {
+    it("parses a group by clause with a single column", () => {
+      const sql = "SELECT * FROM [dbo].[users] GROUP BY id;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.groupBy).toMatchInlineSnapshot(`
               [
                 {
                   "alias": null,
@@ -517,12 +521,12 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
 
-        it("parses a group by clause with multiple columns", () => {
-            const sql = "SELECT * FROM [dbo].[users] GROUP BY id, name;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.groupBy).toMatchInlineSnapshot(`
+    it("parses a group by clause with multiple columns", () => {
+      const sql = "SELECT * FROM [dbo].[users] GROUP BY id, name;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.groupBy).toMatchInlineSnapshot(`
               [
                 {
                   "alias": null,
@@ -542,14 +546,14 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
     });
+  });
 
-    describe("order by clause", () => {
-        it("parses an order by clause with a single column", () => {
-            const sql = "SELECT * FROM [dbo].[users] ORDER BY id;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.orderBy).toMatchInlineSnapshot(`
+  describe("order by clause", () => {
+    it("parses an order by clause with a single column", () => {
+      const sql = "SELECT * FROM [dbo].[users] ORDER BY id;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.orderBy).toMatchInlineSnapshot(`
               [
                 {
                   "column": {
@@ -565,12 +569,12 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
+    });
 
-        it("parses an order by clause with multiple columns", () => {
-            const sql = "SELECT * FROM [dbo].[users] ORDER BY id, name DESC;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.orderBy).toMatchInlineSnapshot(`
+    it("parses an order by clause with multiple columns", () => {
+      const sql = "SELECT * FROM [dbo].[users] ORDER BY id, name DESC;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.orderBy).toMatchInlineSnapshot(`
               [
                 {
                   "column": {
@@ -598,14 +602,14 @@ describe("parsing select statements", () => {
                 },
               ]
             `);
-        });
     });
+  });
 
-    describe("offset and limit", () => {
-        it("parses an offset clause", () => {
-            const sql = "SELECT * FROM [dbo].[users] OFFSET 10 ROWS;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.offset).toMatchInlineSnapshot(`
+  describe("offset and limit", () => {
+    it("parses an offset clause", () => {
+      const sql = "SELECT * FROM [dbo].[users] OFFSET 10 ROWS;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.offset).toMatchInlineSnapshot(`
               {
                 "kind": "offset",
                 "rows": {
@@ -615,12 +619,12 @@ describe("parsing select statements", () => {
                 },
               }
             `);
-        });
+    });
 
-        it("parses a limit clause", () => {
-            const sql = "SELECT * FROM [dbo].[users] FETCH NEXT 5 ROWS ONLY;";
-            const result = parseMSSQLStatement(sql);
-            expect(result.limit).toMatchInlineSnapshot(`
+    it("parses a limit clause", () => {
+      const sql = "SELECT * FROM [dbo].[users] FETCH NEXT 5 ROWS ONLY;";
+      const result = parseMSSQLStatement(sql);
+      expect(result.limit).toMatchInlineSnapshot(`
               {
                 "kind": "limit",
                 "rows": {
@@ -630,6 +634,6 @@ describe("parsing select statements", () => {
                 },
               }
             `);
-        });
     });
+  });
 });

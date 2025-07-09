@@ -1,6 +1,6 @@
 {
   "name": "node-simple-mssql-parser",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "A simple parser for MSSQL queries in Node.js",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -12,26 +12,28 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "dependencies": {
-    "peggy": "^5.0.4",
-    "vitest": "^3.2.4"
+    "peggy": "^5.0.4"
   },
   "scripts": {
     "test": "vitest",
     "build": "tsup",
+    "lint": "eslint src --ext .ts",
     "build-parser": "peggy -o src/mssql-parser.js src/mssql-parser.pegjs",
     "start": "node dist/index.js"
   },
   "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.36.0",
-    "@typescript-eslint/parser": "^8.36.0",
     "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.1",
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.36.0"
   }
 }
