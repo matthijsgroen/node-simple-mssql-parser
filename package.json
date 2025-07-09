@@ -1,4 +1,17 @@
 {
   "name": "node-simple-mssql-parser",
-  "packageManager": "yarn@4.9.2"
+  "packageManager": "yarn@4.9.2",
+  "version": "1.0.0",
+  "description": "A simple parser for MSSQL queries in Node.js",
+  "dependencies": {
+    "peggy": "^5.0.4",
+    "vite": "^7.0.3",
+    "vitest": "^3.2.4"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "vite build",
+    "build-parser": "peggy -o src/mssql-parser.js src/mssql-parser.pegjs",
+    "start": "node dist/index.js"
+  }
 }
