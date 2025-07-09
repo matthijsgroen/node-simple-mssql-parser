@@ -6,12 +6,12 @@ select
      WS "from"i WS from:table_source
      joins:(joins)?
      where:(where)?
-     group:(group)?
+     groupBy:(group)?
      order:(order)?
      offset:(offset)?
      limit:(limit)?
      ";"
-     { return { kind: "select", select, from, joins, where, group, order, offset, limit } }
+     { return { kind: "select", select, from, joins, where, groupBy, order, offset, limit } }
    
 selection 
   = select_statement|1.., "," WS |
@@ -41,18 +41,24 @@ select_source
 
 joins = join+
 
-join = WS left:("left"i WS)? right:("right"i WS)? "join"i
-  WS source:table_source_alias WS "on"i
-  WS a:column_name WS "=" WS b:column_name { return { 
+joinType =
+  "inner"i WS { return "inner" }
+  / "left"i (WS "outer"i)? WS { return "left outer" }
+  / "right"i (WS "outer"i)? WS { return "right outer" }
+
+join = WS type:joinType? "join"i
+  WS source:table_source_alias 
+  condition:(WS "on"i WS c:condition { return c })? 
+  { return { 
     kind: "join", 
-    direction: left ? "left" : right ? "right" : null,
+    type: type ?? "inner", 
     source,
-    left: a, right: b
+    condition
   } }
 
 where = WS "where"i WS c:conditions { return { kind: "where", condition:c } }
 
-group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return { kind: "group", columns: c } }
+group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return { kind: "group-by", columns: c } }
 
 order = WS "order"i WS "by"i WS c:(column_sorting|1.., "," WS |) { return { kind: "order", columns: c } }
 
@@ -61,15 +67,15 @@ column_sorting
 
 conditions
   = "(" WS? c:conditions WS? ")" { return c }
-  / a:condition WS "and"i WS b:conditions { return { kind: "condition", type: "and", a, b } }
-  / a:condition WS "or"i WS b:conditions { return { kind: "condition", type: "or", a, b } }
+  / left:condition WS "and"i WS right:conditions { return { kind: "condition", type: "and", left, right } }
+  / left:condition WS "or"i WS right:conditions { return { kind: "condition", type: "or", left, right } }
   / condition
   
 condition
   = equality_condition
   
 equality_condition
-  = a:column_name WS "=" WS b:(literal / input / column_name) { return { kind: "condition", a, b, type: "equality" } }
+  = left:column_name WS "=" WS right:(literal / input / column_name) { return { kind: "condition", left, right, type: "equality" } }
 
 offset
   = WS "offset"i WS input:(input / number) WS "rows"i { return { kind: "offset", rows: input } }

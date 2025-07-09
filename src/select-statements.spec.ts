@@ -19,7 +19,7 @@ describe("parsing select statements", () => {
                 "name": "users",
               },
             },
-            "group": null,
+            "groupBy": null,
             "joins": null,
             "kind": "select",
             "limit": null,
@@ -245,30 +245,33 @@ describe("parsing select statements", () => {
             expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
-                  "direction": null,
+                  "condition": {
+                    "kind": "condition",
+                    "left": {
+                      "alias": {
+                        "kind": "identifier",
+                        "name": "u",
+                      },
+                      "column": {
+                        "kind": "identifier",
+                        "name": "id",
+                      },
+                      "kind": "column",
+                    },
+                    "right": {
+                      "alias": {
+                        "kind": "identifier",
+                        "name": "p",
+                      },
+                      "column": {
+                        "kind": "identifier",
+                        "name": "user_id",
+                      },
+                      "kind": "column",
+                    },
+                    "type": "equality",
+                  },
                   "kind": "join",
-                  "left": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "u",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                  "right": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "p",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "user_id",
-                    },
-                    "kind": "column",
-                  },
                   "source": {
                     "alias": {
                       "kind": "identifier",
@@ -284,6 +287,7 @@ describe("parsing select statements", () => {
                       "name": "posts",
                     },
                   },
+                  "type": "inner",
                 },
               ]
             `);
@@ -295,30 +299,33 @@ describe("parsing select statements", () => {
             expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
-                  "direction": "left",
+                  "condition": {
+                    "kind": "condition",
+                    "left": {
+                      "alias": {
+                        "kind": "identifier",
+                        "name": "u",
+                      },
+                      "column": {
+                        "kind": "identifier",
+                        "name": "id",
+                      },
+                      "kind": "column",
+                    },
+                    "right": {
+                      "alias": {
+                        "kind": "identifier",
+                        "name": "p",
+                      },
+                      "column": {
+                        "kind": "identifier",
+                        "name": "user_id",
+                      },
+                      "kind": "column",
+                    },
+                    "type": "equality",
+                  },
                   "kind": "join",
-                  "left": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "u",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                  "right": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "p",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "user_id",
-                    },
-                    "kind": "column",
-                  },
                   "source": {
                     "alias": {
                       "kind": "identifier",
@@ -334,6 +341,7 @@ describe("parsing select statements", () => {
                       "name": "posts",
                     },
                   },
+                  "type": "left outer",
                 },
               ]
             `);
@@ -345,30 +353,33 @@ describe("parsing select statements", () => {
             expect(result.joins).toMatchInlineSnapshot(`
               [
                 {
-                  "direction": "right",
+                  "condition": {
+                    "kind": "condition",
+                    "left": {
+                      "alias": {
+                        "kind": "identifier",
+                        "name": "u",
+                      },
+                      "column": {
+                        "kind": "identifier",
+                        "name": "id",
+                      },
+                      "kind": "column",
+                    },
+                    "right": {
+                      "alias": {
+                        "kind": "identifier",
+                        "name": "p",
+                      },
+                      "column": {
+                        "kind": "identifier",
+                        "name": "user_id",
+                      },
+                      "kind": "column",
+                    },
+                    "type": "equality",
+                  },
                   "kind": "join",
-                  "left": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "u",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                  "right": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "p",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "user_id",
-                    },
-                    "kind": "column",
-                  },
                   "source": {
                     "alias": {
                       "kind": "identifier",
@@ -384,6 +395,7 @@ describe("parsing select statements", () => {
                       "name": "posts",
                     },
                   },
+                  "type": "right outer",
                 },
               ]
             `);
@@ -397,7 +409,8 @@ describe("parsing select statements", () => {
             expect(result.where).toMatchInlineSnapshot(`
               {
                 "condition": {
-                  "a": {
+                  "kind": "condition",
+                  "left": {
                     "alias": null,
                     "column": {
                       "kind": "identifier",
@@ -405,11 +418,10 @@ describe("parsing select statements", () => {
                     },
                     "kind": "column",
                   },
-                  "b": {
+                  "right": {
                     "kind": "literal",
                     "type": "null",
                   },
-                  "kind": "condition",
                   "type": "equality",
                 },
                 "kind": "where",
@@ -423,8 +435,10 @@ describe("parsing select statements", () => {
             expect(result.where).toMatchInlineSnapshot(`
               {
                 "condition": {
-                  "a": {
-                    "a": {
+                  "kind": "condition",
+                  "left": {
+                    "kind": "condition",
+                    "left": {
                       "alias": null,
                       "column": {
                         "kind": "identifier",
@@ -432,17 +446,18 @@ describe("parsing select statements", () => {
                       },
                       "kind": "column",
                     },
-                    "b": {
+                    "right": {
                       "kind": "literal",
                       "type": "number",
                       "value": 5,
                     },
-                    "kind": "condition",
                     "type": "equality",
                   },
-                  "b": {
-                    "a": {
-                      "a": {
+                  "right": {
+                    "kind": "condition",
+                    "left": {
+                      "kind": "condition",
+                      "left": {
                         "alias": {
                           "kind": "identifier",
                           "name": "a",
@@ -453,15 +468,15 @@ describe("parsing select statements", () => {
                         },
                         "kind": "column",
                       },
-                      "b": {
+                      "right": {
                         "identifier": "input",
                         "kind": "input",
                       },
-                      "kind": "condition",
                       "type": "equality",
                     },
-                    "b": {
-                      "a": {
+                    "right": {
+                      "kind": "condition",
+                      "left": {
                         "alias": null,
                         "column": {
                           "kind": "identifier",
@@ -469,23 +484,34 @@ describe("parsing select statements", () => {
                         },
                         "kind": "column",
                       },
-                      "b": {
+                      "right": {
                         "kind": "literal",
                         "type": "string",
                         "value": "hello",
                       },
-                      "kind": "condition",
                       "type": "equality",
                     },
-                    "kind": "condition",
                     "type": "or",
                   },
-                  "kind": "condition",
                   "type": "and",
                 },
                 "kind": "where",
               }
             `);
+        });
+    });
+
+    describe("group by clause", () => {
+        it("parses a group by clause with a single column", () => {
+            const sql = "SELECT * FROM [dbo].[users] GROUP BY id;";
+            const result = parse(sql);
+            expect(result.group).toMatchInlineSnapshot(`undefined`);
+        });
+
+        it("parses a group by clause with multiple columns", () => {
+            const sql = "SELECT * FROM [dbo].[users] GROUP BY id, name;";
+            const result = parse(sql);
+            expect(result.group).toMatchInlineSnapshot(`undefined`);
         });
     });
 });
