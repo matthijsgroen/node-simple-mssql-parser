@@ -3,7 +3,7 @@ import { parseMSSQLStatement } from ".";
 import { InsertStatementNode } from "./types";
 
 describe("parsing insert statement", () => {
-  const parseInsertStatement = (sql: string) =>
+  const parseInsertStatement = (sql: string): InsertStatementNode =>
     parseMSSQLStatement(sql) as InsertStatementNode;
 
   it("parses a simple insert statement", () => {

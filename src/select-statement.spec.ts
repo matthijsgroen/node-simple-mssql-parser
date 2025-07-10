@@ -3,7 +3,7 @@ import { parseMSSQLStatement } from "./index";
 import { SelectStatementNode } from "./types";
 
 describe("parsing select statement", () => {
-  const parseSelectStatement = (sql: string) =>
+  const parseSelectStatement = (sql: string): SelectStatementNode =>
     parseMSSQLStatement(sql) as SelectStatementNode;
 
   it("parses a simple select statement", () => {
@@ -444,8 +444,81 @@ describe("parsing select statement", () => {
     });
 
     it("parses NULL conditions", () => {
-      const sql =
-        "SELECT * FROM [dbo].[users] WHERE id IS NULL AND archived_at IS NOT NULL;";
+      const sql = `
+              SELECT
+          message.id as message_id,
+          message.user_id,
+          message.channel_id,
+          message.type,
+          message.body,
+          message.attachment,
+          message.highlighted,
+          message.published_on,
+          message.deleted_at,
+          message.edited_at,
+          message.original_message_id,
+          message.quote_message_id,
+          users.user_name,
+          users.mijn_eo_id,
+          users.user_role,
+          users.avatar_url,
+          channel.publication_id,
+          COUNT(liked.user_id) AS num_likes,
+          quote.id as quote_message_id,
+          quote.user_id as quote_user_id,
+          quote.body as quote_body,
+          quote.published_on as quote_published_on,
+          quote.deleted_at as quote_deleted_at,
+          quote.deleted_by as quote_deleted_by,
+          quote_users.user_name as quote_user_name
+        FROM
+          [dbo].[chat_message] message
+        JOIN
+          [dbo].[users] users ON message.user_id = users.id
+        JOIN
+          [dbo].[chat_channel] channel ON message.channel_id = channel.id
+        LEFT JOIN
+          [dbo].[liked_message] liked ON message.id = liked.message_id
+        LEFT JOIN
+          [dbo].[chat_message] quote ON quote.id = message.quote_message_id
+        LEFT JOIN
+          [dbo].[users] quote_users ON quote_users.id = quote.user_id
+        WHERE
+          channel.publication_id = @preprChannelPublicationId
+          AND message.archived_at IS NULL
+          AND message.deleted_at IS NULL
+        GROUP BY
+          message.id,
+          message.user_id,
+          message.channel_id,
+          message.type,
+          message.body,
+          message.attachment,
+          message.highlighted,
+          message.published_on,
+          message.deleted_at,
+          message.edited_at,
+          message.original_message_id,
+          message.quote_message_id,
+          users.user_name,
+          users.mijn_eo_id,
+          users.user_role,
+          users.avatar_url,
+          channel.publication_id,
+          quote.id,
+          quote.user_id,
+          quote.body,
+          quote.published_on,
+          quote.deleted_at,
+          quote.deleted_by,
+          quote_users.user_name
+        ORDER BY
+          message.published_on DESC
+        OFFSET @skip ROWS
+        FETCH NEXT @limit ROWS ONLY;
+      `;
+
+      // "SELECT * FROM [dbo].[users] WHERE id IS NULL AND archived_at IS NOT NULL;";
       const result = parseSelectStatement(sql);
       expect(result.where).toMatchInlineSnapshot(`
         {
@@ -454,10 +527,55 @@ describe("parsing select statement", () => {
             "left": {
               "kind": "condition",
               "left": {
-                "alias": null,
+                "kind": "condition",
+                "left": {
+                  "alias": {
+                    "kind": "identifier",
+                    "name": "channel",
+                  },
+                  "column": {
+                    "kind": "identifier",
+                    "name": "publication_id",
+                  },
+                  "kind": "column",
+                },
+                "right": {
+                  "identifier": "preprChannelPublicationId",
+                  "kind": "input",
+                },
+                "type": "equality",
+              },
+              "right": {
+                "kind": "condition",
+                "left": {
+                  "alias": {
+                    "kind": "identifier",
+                    "name": "message",
+                  },
+                  "column": {
+                    "kind": "identifier",
+                    "name": "archived_at",
+                  },
+                  "kind": "column",
+                },
+                "right": {
+                  "kind": "literal",
+                  "type": "null",
+                },
+                "type": "equality",
+              },
+              "type": "and",
+            },
+            "right": {
+              "kind": "condition",
+              "left": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "message",
+                },
                 "column": {
                   "kind": "identifier",
-                  "name": "id",
+                  "name": "deleted_at",
                 },
                 "kind": "column",
               },
@@ -466,22 +584,6 @@ describe("parsing select statement", () => {
                 "type": "null",
               },
               "type": "equality",
-            },
-            "right": {
-              "kind": "condition",
-              "left": {
-                "alias": null,
-                "column": {
-                  "kind": "identifier",
-                  "name": "archived_at",
-                },
-                "kind": "column",
-              },
-              "right": {
-                "kind": "literal",
-                "type": "null",
-              },
-              "type": "inequality",
             },
             "type": "and",
           },
