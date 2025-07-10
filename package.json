@@ -1,6 +1,6 @@
 {
   "name": "node-simple-mssql-parser",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A simple, lightweight parser for MSSQL (T-SQL) SELECT and INSERT statements in Node.js. Parses SQL to AST and provides traversal utilities.",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
