@@ -34,6 +34,18 @@ export function traverse<T = void>(
         node.output.forEach((col) => traverse(col, visitor, node));
       break;
     }
+    case "update": {
+      traverse(node.target, visitor, node);
+      node.set.forEach((col) => traverse(col, visitor, node));
+      if (node.output)
+        node.output.forEach((col) => traverse(col, visitor, node));
+      break;
+    }
+    case "assignment": {
+      traverse(node.column, visitor, node);
+      traverse(node.value, visitor, node);
+      break;
+    }
     case "values": {
       node.values.forEach((val) => traverse(val, visitor, node));
       break;

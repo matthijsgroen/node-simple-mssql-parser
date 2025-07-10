@@ -17,6 +17,12 @@ export const prettyPrint = (node: SyntaxNode): string => {
       return `INSERT INTO ${prettyPrint(node.target)} (${node.columns.map(prettyPrint).join(", ")})${
         node.output ? ` OUTPUT ${node.output.map(prettyPrint).join(", ")}` : ""
       } ${prettyPrint(node.values)};`;
+    case "update":
+      return `UPDATE ${prettyPrint(node.target)} SET ${node.set.map(prettyPrint).join(", ")}${
+        node.output ? ` OUTPUT ${node.output.map(prettyPrint).join(", ")}` : ""
+      }${node.where ? ` WHERE ${prettyPrint(node.where)}` : ""};`;
+    case "assignment":
+      return `${prettyPrint(node.column)} = ${prettyPrint(node.value)}`;
     case "values":
       return `VALUES (${node.values.map(prettyPrint).join(", ")})`;
     case "select-source":
