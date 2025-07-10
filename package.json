@@ -37,7 +37,6 @@
   "files": [
     "dist"
   ],
-  "type": "module",
   "dependencies": {
     "peggy": "^5.0.4"
   },
