@@ -270,7 +270,7 @@ function peg$parse(input, options) {
 
   function peg$f0(st) {    return st  }
   function peg$f1(select, from, joins, where, groupBy, orderBy, offset, limit) {    return { kind: "select", select, from, joins, where, groupBy, orderBy, offset, limit }  }
-  function peg$f2(target, columns, output, values) {    return { kind: "insert", target, columns: columns.map(c => ({ kind: "column", alias: null, column: c })), output, values }  }
+  function peg$f2(target, columns, output, values) {    return { kind: "insert", target, columns: columns.map(c => ({ kind: "column", alias: null, name: c })), output, values }  }
   function peg$f3(column) {    return column  }
   function peg$f4(value) {    return value  }
   function peg$f5(values) {    return { kind: "values", values }  }
@@ -320,7 +320,7 @@ function peg$parse(input, options) {
       right: next
     }), head);
   }
-  function peg$f33(c) {    return c  }
+  function peg$f33(c) {    return { kind: "condition-group", condition: c }  }
   function peg$f34(left, right) {    return { kind: "condition", left, right, type: "equality" }  }
   function peg$f35(left, right) {    return { kind: "condition", left, right, type: "inequality" }  }
   function peg$f36(left, not) {    return { kind: "condition", left, right: { kind: "literal", type: "null" }, type: not ? "inequality" : "equality" }  }

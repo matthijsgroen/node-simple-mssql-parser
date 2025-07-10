@@ -18,7 +18,7 @@ describe("traverse", () => {
         },
       ],
       from: {
-        kind: "table-source",
+        kind: "table",
         db: { kind: "identifier", name: "dbo" },
         table: { kind: "identifier", name: "bar" },
         alias: null,
@@ -44,7 +44,7 @@ describe("traverse", () => {
       "select-source",
       "column",
       "identifier",
-      "table-source",
+      "table",
       "identifier",
       "identifier",
     ]);
@@ -74,7 +74,7 @@ describe("traverse", () => {
         },
       ],
       from: {
-        kind: "table-source",
+        kind: "table",
         db: { kind: "identifier", name: "dbo" },
         table: { kind: "identifier", name: "baz" },
         alias: null,
@@ -102,7 +102,7 @@ describe("traverse", () => {
     const ast: StatementNode = {
       kind: "insert",
       target: {
-        kind: "table-source",
+        kind: "table",
         db: { kind: "identifier", name: "dbo" },
         table: { kind: "identifier", name: "users" },
         alias: null,
@@ -138,7 +138,7 @@ describe("traverse", () => {
 
     expect(visitedNodes).toEqual([
       "insert",
-      "table-source",
+      "table",
       "identifier",
       "identifier",
       "column",

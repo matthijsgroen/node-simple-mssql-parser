@@ -613,44 +613,47 @@ describe("parsing select statement", () => {
               "type": "equality",
             },
             "right": {
-              "kind": "condition",
-              "left": {
+              "condition": {
                 "kind": "condition",
                 "left": {
-                  "alias": {
-                    "kind": "identifier",
-                    "name": "a",
+                  "kind": "condition",
+                  "left": {
+                    "alias": {
+                      "kind": "identifier",
+                      "name": "a",
+                    },
+                    "kind": "column",
+                    "name": {
+                      "kind": "identifier",
+                      "name": "b",
+                    },
                   },
-                  "kind": "column",
-                  "name": {
-                    "kind": "identifier",
-                    "name": "b",
+                  "right": {
+                    "identifier": "input",
+                    "kind": "input",
                   },
+                  "type": "inequality",
                 },
                 "right": {
-                  "identifier": "input",
-                  "kind": "input",
-                },
-                "type": "inequality",
-              },
-              "right": {
-                "kind": "condition",
-                "left": {
-                  "alias": null,
-                  "kind": "column",
-                  "name": {
-                    "kind": "identifier",
-                    "name": "columnName2",
+                  "kind": "condition",
+                  "left": {
+                    "alias": null,
+                    "kind": "column",
+                    "name": {
+                      "kind": "identifier",
+                      "name": "columnName2",
+                    },
                   },
+                  "right": {
+                    "kind": "literal",
+                    "type": "string",
+                    "value": "hello",
+                  },
+                  "type": "equality",
                 },
-                "right": {
-                  "kind": "literal",
-                  "type": "string",
-                  "value": "hello",
-                },
-                "type": "equality",
+                "type": "or",
               },
-              "type": "or",
+              "kind": "condition-group",
             },
             "type": "and",
           },

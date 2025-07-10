@@ -14,19 +14,19 @@ describe("parsing insert statement", () => {
         "columns": [
           {
             "alias": null,
-            "column": {
+            "kind": "column",
+            "name": {
               "kind": "identifier",
               "name": "name",
             },
-            "kind": "column",
           },
           {
             "alias": null,
-            "column": {
+            "kind": "column",
+            "name": {
               "kind": "identifier",
               "name": "age",
             },
-            "kind": "column",
           },
         ],
         "kind": "insert",

@@ -1,7 +1,7 @@
 export type SyntaxNode =
   | StatementNode
   | SelectSourceNode
-  | TableSourceNode
+  | TableNode
   | ColumnNode
   | ColumnOrderNode
   | FunctionNode
@@ -22,7 +22,7 @@ export type StatementNode = SelectStatementNode | InsertStatementNode;
 export type SelectStatementNode = {
   kind: "select";
   select: SelectSourceNode[];
-  from: TableSourceNode;
+  from: TableNode;
   joins: JoinNode[] | null;
   where: ConditionNode | null;
   groupBy: ColumnNode[] | null;
@@ -37,8 +37,8 @@ export type SelectSourceNode = {
   alias: IdentifierNode | null;
 };
 
-export type TableSourceNode = {
-  kind: "table-source";
+export type TableNode = {
+  kind: "table";
   db: IdentifierNode;
   table: IdentifierNode;
   alias: IdentifierNode | null;
@@ -67,11 +67,14 @@ export type CountFunctionNode = {
 export type JoinNode = {
   kind: "join";
   type: "inner" | "left outer" | "right outer";
-  table: TableSourceNode;
+  source: TableNode;
   condition: ConditionNode;
 };
 
-export type ConditionNode = EqualityConditionNode | LogicalConditionNode;
+export type ConditionNode =
+  | EqualityConditionNode
+  | LogicalConditionNode
+  | GroupedConditionNode;
 
 export type EqualityConditionNode = {
   kind: "condition";
@@ -87,9 +90,14 @@ export type LogicalConditionNode = {
   right: ConditionNode;
 };
 
+export type GroupedConditionNode = {
+  kind: "condition-group";
+  condition: ConditionNode;
+};
+
 export type InsertStatementNode = {
   kind: "insert";
-  target: TableSourceNode;
+  target: TableNode;
   columns: ColumnNode[];
   values: ValuesNode;
   output: ColumnNode[] | null;

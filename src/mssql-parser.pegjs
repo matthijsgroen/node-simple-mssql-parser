@@ -19,7 +19,7 @@ insert
   output:(output)?
   values:(values)
   ";"
-  { return { kind: "insert", target, columns: columns.map(c => ({ kind: "column", alias: null, column: c })), output, values } }
+  { return { kind: "insert", target, columns: columns.map(c => ({ kind: "column", alias: null, name: c })), output, values } }
 
 insert_columns
   = (WS? column:identifier { return column })|1.., "," WS?|
@@ -114,7 +114,7 @@ and_condition
     }
 
 grouped_condition
-  = "(" WS? c:conditions WS? ")" { return c }
+  = "(" WS? c:conditions WS? ")" { return { kind: "condition-group", condition: c } }
   / condition
   
 condition

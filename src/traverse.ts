@@ -43,7 +43,7 @@ export function traverse<T = void>(
       if (node.alias) traverse(node.alias, visitor, node);
       break;
     }
-    case "table-source": {
+    case "table": {
       traverse(node.db, visitor, node);
       traverse(node.table, visitor, node);
       if (node.alias) traverse(node.alias, visitor, node);
@@ -63,13 +63,17 @@ export function traverse<T = void>(
       break;
     }
     case "join": {
-      traverse(node.table, visitor, node);
+      traverse(node.source, visitor, node);
       traverse(node.condition, visitor, node);
       break;
     }
     case "condition": {
       traverse(node.left, visitor, node);
       traverse(node.right, visitor, node);
+      break;
+    }
+    case "condition-group": {
+      traverse(node.condition, visitor, node);
       break;
     }
     case "literal": {
