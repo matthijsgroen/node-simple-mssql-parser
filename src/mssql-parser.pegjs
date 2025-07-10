@@ -91,16 +91,43 @@ column_sorting
   = c:column_name direction:(WS d:orderDirection { return d })? { return { kind: "order", column: c, direction: direction ?? "asc" } }
 
 conditions
+  = or_condition
+
+or_condition
+  = head:and_condition tail:(WS "or"i WS and_condition)* {
+      return tail.reduce((acc, [, , , next]) => ({
+        kind: "condition",
+        type: "or",
+        left: acc,
+        right: next
+      }), head);
+    }
+
+and_condition
+  = head:grouped_condition tail:(WS "and"i WS grouped_condition)* {
+      return tail.reduce((acc, [, , , next]) => ({
+        kind: "condition",
+        type: "and",
+        left: acc,
+        right: next
+      }), head);
+    }
+
+grouped_condition
   = "(" WS? c:conditions WS? ")" { return c }
-  / left:condition WS "and"i WS right:conditions { return { kind: "condition", type: "and", left, right } }
-  / left:condition WS "or"i WS right:conditions { return { kind: "condition", type: "or", left, right } }
   / condition
   
 condition
   = equality_condition
+  / null_condition
   
 equality_condition
   = left:column_name WS "=" WS right:(literal / input / column_name) { return { kind: "condition", left, right, type: "equality" } }
+  / left:column_name WS "<>" WS right:(literal / input / column_name) { return { kind: "condition", left, right, type: "inequality" } }
+
+null_condition
+  = left:column_name WS "is"i WS not:("not"i WS) "null"i 
+  { return { kind: "condition", left, right: { kind: "literal", type: "null" }, type: not ? "inequality" : "equality" } }
 
 offset
   = WS "offset"i WS input:(input / number) WS "rows"i { return { kind: "offset", rows: input } }
