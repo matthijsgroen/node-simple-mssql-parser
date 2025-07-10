@@ -75,7 +75,7 @@ join = WS type:joinType? "join"i
     condition
   } }
 
-where = WS "where"i WS c:conditions { return { kind: "where", condition:c } }
+where = WS "where"i WS c:conditions { return c }
 
 group = WS "group"i WS "by"i WS c:(column_name|1.., "," WS |) { return c }
 

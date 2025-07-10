@@ -421,26 +421,23 @@ describe("parsing select statement", () => {
       const sql = "SELECT * FROM [dbo].[users] WHERE id = null;";
       const result = parseSelectStatement(sql);
       expect(result.where).toMatchInlineSnapshot(`
-              {
-                "condition": {
-                  "kind": "condition",
-                  "left": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                  "right": {
-                    "kind": "literal",
-                    "type": "null",
-                  },
-                  "type": "equality",
-                },
-                "kind": "where",
-              }
-            `);
+        {
+          "kind": "condition",
+          "left": {
+            "alias": null,
+            "column": {
+              "kind": "identifier",
+              "name": "id",
+            },
+            "kind": "column",
+          },
+          "right": {
+            "kind": "literal",
+            "type": "null",
+          },
+          "type": "equality",
+        }
+      `);
     });
 
     it("parses NULL conditions", () => {
@@ -522,49 +519,27 @@ describe("parsing select statement", () => {
       const result = parseSelectStatement(sql);
       expect(result.where).toMatchInlineSnapshot(`
         {
-          "condition": {
+          "kind": "condition",
+          "left": {
             "kind": "condition",
             "left": {
               "kind": "condition",
               "left": {
-                "kind": "condition",
-                "left": {
-                  "alias": {
-                    "kind": "identifier",
-                    "name": "channel",
-                  },
-                  "column": {
-                    "kind": "identifier",
-                    "name": "publication_id",
-                  },
-                  "kind": "column",
+                "alias": {
+                  "kind": "identifier",
+                  "name": "channel",
                 },
-                "right": {
-                  "identifier": "preprChannelPublicationId",
-                  "kind": "input",
+                "column": {
+                  "kind": "identifier",
+                  "name": "publication_id",
                 },
-                "type": "equality",
+                "kind": "column",
               },
               "right": {
-                "kind": "condition",
-                "left": {
-                  "alias": {
-                    "kind": "identifier",
-                    "name": "message",
-                  },
-                  "column": {
-                    "kind": "identifier",
-                    "name": "archived_at",
-                  },
-                  "kind": "column",
-                },
-                "right": {
-                  "kind": "literal",
-                  "type": "null",
-                },
-                "type": "equality",
+                "identifier": "preprChannelPublicationId",
+                "kind": "input",
               },
-              "type": "and",
+              "type": "equality",
             },
             "right": {
               "kind": "condition",
@@ -575,7 +550,7 @@ describe("parsing select statement", () => {
                 },
                 "column": {
                   "kind": "identifier",
-                  "name": "deleted_at",
+                  "name": "archived_at",
                 },
                 "kind": "column",
               },
@@ -587,7 +562,26 @@ describe("parsing select statement", () => {
             },
             "type": "and",
           },
-          "kind": "where",
+          "right": {
+            "kind": "condition",
+            "left": {
+              "alias": {
+                "kind": "identifier",
+                "name": "message",
+              },
+              "column": {
+                "kind": "identifier",
+                "name": "deleted_at",
+              },
+              "kind": "column",
+            },
+            "right": {
+              "kind": "literal",
+              "type": "null",
+            },
+            "type": "equality",
+          },
+          "type": "and",
         }
       `);
     });
@@ -598,88 +592,85 @@ describe("parsing select statement", () => {
       const result = parseSelectStatement(sql);
       expect(result.where).toMatchInlineSnapshot(`
         {
-          "condition": {
+          "kind": "condition",
+          "left": {
             "kind": "condition",
             "left": {
-              "kind": "condition",
-              "left": {
-                "kind": "condition",
-                "left": {
-                  "alias": null,
-                  "column": {
-                    "kind": "identifier",
-                    "name": "id",
-                  },
-                  "kind": "column",
-                },
-                "right": {
-                  "kind": "literal",
-                  "type": "number",
-                  "value": 5,
-                },
-                "type": "equality",
-              },
-              "right": {
-                "kind": "condition",
-                "left": {
-                  "kind": "condition",
-                  "left": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "a",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "b",
-                    },
-                    "kind": "column",
-                  },
-                  "right": {
-                    "identifier": "input",
-                    "kind": "input",
-                  },
-                  "type": "inequality",
-                },
-                "right": {
-                  "kind": "condition",
-                  "left": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "columnName2",
-                    },
-                    "kind": "column",
-                  },
-                  "right": {
-                    "kind": "literal",
-                    "type": "string",
-                    "value": "hello",
-                  },
-                  "type": "equality",
-                },
-                "type": "or",
-              },
-              "type": "and",
-            },
-            "right": {
               "kind": "condition",
               "left": {
                 "alias": null,
                 "column": {
                   "kind": "identifier",
-                  "name": "foo",
+                  "name": "id",
                 },
                 "kind": "column",
               },
               "right": {
                 "kind": "literal",
-                "type": "null",
+                "type": "number",
+                "value": 5,
               },
-              "type": "inequality",
+              "type": "equality",
+            },
+            "right": {
+              "kind": "condition",
+              "left": {
+                "kind": "condition",
+                "left": {
+                  "alias": {
+                    "kind": "identifier",
+                    "name": "a",
+                  },
+                  "column": {
+                    "kind": "identifier",
+                    "name": "b",
+                  },
+                  "kind": "column",
+                },
+                "right": {
+                  "identifier": "input",
+                  "kind": "input",
+                },
+                "type": "inequality",
+              },
+              "right": {
+                "kind": "condition",
+                "left": {
+                  "alias": null,
+                  "column": {
+                    "kind": "identifier",
+                    "name": "columnName2",
+                  },
+                  "kind": "column",
+                },
+                "right": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "hello",
+                },
+                "type": "equality",
+              },
+              "type": "or",
             },
             "type": "and",
           },
-          "kind": "where",
+          "right": {
+            "kind": "condition",
+            "left": {
+              "alias": null,
+              "column": {
+                "kind": "identifier",
+                "name": "foo",
+              },
+              "kind": "column",
+            },
+            "right": {
+              "kind": "literal",
+              "type": "null",
+            },
+            "type": "inequality",
+          },
+          "type": "and",
         }
       `);
     });

@@ -296,7 +296,7 @@ function peg$parse(input, options) {
        source,
        condition
      }  }
-  function peg$f23(c) {    return { kind: "where", condition:c }  }
+  function peg$f23(c) {    return c  }
   function peg$f24(c) {    return c  }
   function peg$f25(c) {    return c  }
   function peg$f26(c) {    return c  }
