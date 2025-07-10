@@ -5,3 +5,4 @@ export const parseMSSQLStatement = (query: string): StatementNode =>
   parse(query);
 
 export { traverse } from "./traverse";
+export * from "./types";
