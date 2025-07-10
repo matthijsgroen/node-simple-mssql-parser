@@ -1,5 +1,5 @@
 sql
-  = WS? st:(select / insert) WS? { return st }
+  = WS? st:(select / insert / update) WS? { return st }
 
 select
    = "select"i WS select:selection 
@@ -14,15 +14,29 @@ select
      { return { kind: "select", select, from, joins, where, groupBy, orderBy, offset, limit } }
 
 insert
-  = "insert"i WS "into"i WS target:table_source
+  = "insert"i WS "into"i WS target:table_name
   WS "(" columns:insert_columns WS? ")"
   output:(output)?
   values:(values)
   ";"
   { return { kind: "insert", target, columns: columns.map(c => ({ kind: "column", alias: null, name: c })), output, values } }
 
+update
+  = "update"i WS target:table_name
+  WS "set"i WS set:(set_columns)
+  output:(output)?
+  where:(where)?
+  ";"
+  { return { kind: "update", target, set, output, where } }
+
 insert_columns
   = (WS? column:identifier { return column })|1.., "," WS?|
+
+set_columns
+  = (WS? assignment:assignment { return assignment })|1.., "," WS?|
+
+assignment
+  = column:column_name WS? "=" WS? value:(input / literal) { return { kind: "assignment", column, value } }
 
 values
   = WS "values"i WS? "(" values:(WS? value:insert_value { return value })|1.., "," WS?| WS? ")" { return { kind: "values", values } }
@@ -48,11 +62,11 @@ table_source_alias
   = table:table_name WS alias:identifier { return { kind: "table", db: table.db, table: table.table, alias } }
 
 table_source
-  = table:table_source_alias { return table } 
-  / table:table_name { return { kind: "table", db: table.db, table: table.table, alias: null } }
+  = table:table_source_alias 
+  / table:table_name 
   
 table_name
-  = "[" db:identifier "].[" table:identifier "]" { return { db, table } }
+  = "[" db:identifier "].[" table:identifier "]" { return { kind: "table", db, table, alias: null } }
 
 select_source
   = "COUNT(" column:column_name ")" { return { kind: "function", name: "count", args: [column] } }

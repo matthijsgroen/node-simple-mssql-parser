@@ -1,6 +1,6 @@
 # node-simple-mssql-parser
 
-A simple, lightweight parser for MSSQL (T-SQL) SELECT and INSERT statements in Node.js. It parses SQL queries into an Abstract Syntax Tree (AST) and provides utilities to traverse and analyze the AST for filtering, transformation, or inspection.
+A simple, lightweight parser for MSSQL (T-SQL) SELECT, UPDATE and INSERT statements in Node.js. It parses SQL queries into an Abstract Syntax Tree (AST) and provides utilities to traverse and analyze the AST for filtering, transformation, or inspection.
 
 
 ## Use Cases
@@ -62,8 +62,17 @@ console.log(columns); // ["id", "name"]
 ```
 
 
-
 ### Parse and Traverse an INSERT Statement
+### Pretty-print a SQL AST
+
+```ts
+import { parseMSSQLStatement, prettyPrint } from "node-simple-mssql-parser";
+
+const sql = "SELECT id, name FROM [dbo].[users];";
+const ast = parseMSSQLStatement(sql);
+const formatted = prettyPrint(ast);
+console.log(formatted);
+```
 
 ```ts
 const sql = "INSERT INTO [dbo].[users] (name, age) VALUES ('Alice', 30);";
@@ -84,12 +93,29 @@ traverse(ast, {
 ```
 
 
-## Supported Features
+## Features
 
-- SELECT, INSERT, FROM, WHERE, GROUP BY, ORDER BY, JOIN, OFFSET, LIMIT
-- Column and table aliases
-- COUNT(*) and similar functions
-- Nested conditions (AND/OR)
+- **Parse MSSQL SELECT, INSERT, and UPDATE statements** into a rich, typed AST
+- **Traverse and analyze the AST** with a flexible visitor utility
+- **Supports WHERE conditions** with nested AND/OR and grouping (parentheses)
+- **Joins:** INNER, LEFT OUTER, RIGHT OUTER
+- **Column and table aliases**
+- **Functions:** COUNT(*), COUNT(column), and NEWID()
+- **GROUP BY, ORDER BY, OFFSET, LIMIT**
+- **Output clause** for INSERT and UPDATE
+- **TypeScript types** for all AST nodes
+- **Pretty-printing**: Convert AST back to formatted SQL
+- **Error reporting** for invalid SQL syntax
+
+### Example SQL features supported:
+
+- `SELECT id, name FROM [dbo].[users] WHERE id = 5 AND (a.b = @input OR columnName2 = 'hello')`
+- `INSERT INTO [dbo].[users] (name, age) OUTPUT inserted.id VALUES ('Alice', 30);`
+- `UPDATE [dbo].[users] SET name = 'Bob' WHERE id = 1;`
+- `SELECT COUNT(*) FROM [dbo].[users]`
+- `SELECT * FROM [dbo].[users] u JOIN [dbo].[posts] p ON u.id = p.user_id`
+
+See the test files for more advanced usage and edge cases.
 
 
 ## License

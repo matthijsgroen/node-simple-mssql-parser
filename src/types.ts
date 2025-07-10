@@ -15,9 +15,13 @@ export type SyntaxNode =
   | LimitNode
   | InsertStatementNode
   | ValuesNode
+  | AssignmentNode
   | NewIdNode;
 
-export type StatementNode = SelectStatementNode | InsertStatementNode;
+export type StatementNode =
+  | SelectStatementNode
+  | InsertStatementNode
+  | UpdateStatementNode;
 
 export type SelectStatementNode = {
   kind: "select";
@@ -159,4 +163,18 @@ export type OffsetNode = {
 export type LimitNode = {
   kind: "limit";
   rows: NumberLiteralNode | InputNode;
+};
+
+export type UpdateStatementNode = {
+  kind: "update";
+  target: TableNode;
+  set: AssignmentNode[];
+  where: ConditionNode | null;
+  output: ColumnNode[] | null;
+};
+
+export type AssignmentNode = {
+  kind: "assignment";
+  column: ColumnNode;
+  value: LiteralNode | InputNode;
 };

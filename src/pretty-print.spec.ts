@@ -66,4 +66,31 @@ describe(prettyPrint, () => {
       "INSERT INTO [dbo].[users] (name, age) VALUES ('Alice', 30);",
     );
   });
+
+  it("formats insert statements with output clause", () => {
+    const sql = `INSERT INTO [dbo].[users] (name, age) OUTPUT inserted.id, inserted.age VALUES ('Alice', 30);`;
+    const ast = parseMSSQLStatement(sql);
+    const result = prettyPrint(ast);
+    expect(result).toBe(
+      "INSERT INTO [dbo].[users] (name, age) OUTPUT inserted.id, inserted.age VALUES ('Alice', 30);",
+    );
+  });
+
+  it("formats update statements", () => {
+    const sql = `UPDATE [dbo].[users] SET name = 'Alice', age = 30 WHERE id = @id;`;
+    const ast = parseMSSQLStatement(sql);
+    const result = prettyPrint(ast);
+    expect(result).toBe(
+      "UPDATE [dbo].[users] SET name = 'Alice', age = 30 WHERE id = @id;",
+    );
+  });
+
+  it("formats update statements with output clause", () => {
+    const sql = `UPDATE [dbo].[users] SET name = 'Alice', age = 30 OUTPUT inserted.id, inserted.age WHERE id = @id;`;
+    const ast = parseMSSQLStatement(sql);
+    const result = prettyPrint(ast);
+    expect(result).toBe(
+      "UPDATE [dbo].[users] SET name = 'Alice', age = 30 OUTPUT inserted.id, inserted.age WHERE id = @id;",
+    );
+  });
 });
