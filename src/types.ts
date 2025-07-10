@@ -76,7 +76,7 @@ export type ConditionNode = EqualityConditionNode | LogicalConditionNode;
 export type EqualityConditionNode = {
   kind: "condition";
   left: ColumnNode;
-  type: "equality";
+  type: "equality" | "inequality";
   right: ColumnNode | LiteralNode | InputNode;
 };
 
