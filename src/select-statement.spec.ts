@@ -443,6 +443,53 @@ describe("parsing select statement", () => {
             `);
     });
 
+    it("parses NULL conditions", () => {
+      const sql =
+        "SELECT * FROM [dbo].[users] WHERE id IS NULL AND archived_at IS NOT NULL;";
+      const result = parseSelectStatement(sql);
+      expect(result.where).toMatchInlineSnapshot(`
+        {
+          "condition": {
+            "kind": "condition",
+            "left": {
+              "kind": "condition",
+              "left": {
+                "alias": null,
+                "column": {
+                  "kind": "identifier",
+                  "name": "id",
+                },
+                "kind": "column",
+              },
+              "right": {
+                "kind": "literal",
+                "type": "null",
+              },
+              "type": "equality",
+            },
+            "right": {
+              "kind": "condition",
+              "left": {
+                "alias": null,
+                "column": {
+                  "kind": "identifier",
+                  "name": "archived_at",
+                },
+                "kind": "column",
+              },
+              "right": {
+                "kind": "literal",
+                "type": "null",
+              },
+              "type": "inequality",
+            },
+            "type": "and",
+          },
+          "kind": "where",
+        }
+      `);
+    });
+
     it("parses a where clause with a complex condition", () => {
       const sql =
         "SELECT * FROM [dbo].[users] WHERE id = 5 AND (a.b <> @input OR columnName2 = 'hello') AND foo IS NOT NULL;";

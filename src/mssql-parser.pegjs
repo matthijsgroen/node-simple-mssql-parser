@@ -126,7 +126,7 @@ equality_condition
   / left:column_name WS "<>" WS right:(literal / input / column_name) { return { kind: "condition", left, right, type: "inequality" } }
 
 null_condition
-  = left:column_name WS "is"i WS not:("not"i WS) "null"i 
+  = left:column_name WS "is"i WS not:("not"i WS)? "null"i 
   { return { kind: "condition", left, right: { kind: "literal", type: "null" }, type: not ? "inequality" : "equality" } }
 
 offset

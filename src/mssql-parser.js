@@ -2289,21 +2289,19 @@ function peg$parse(input, options) {
               peg$currPos = s5;
               s5 = peg$FAILED;
             }
-            if (s5 !== peg$FAILED) {
-              s6 = input.substr(peg$currPos, 4);
-              if (s6.toLowerCase() === peg$c36) {
-                peg$currPos += (4);
-              } else {
-                s6 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$e37); }
-              }
-              if (s6 !== peg$FAILED) {
-                peg$savedPos = s0;
-                s0 = peg$f36(s1, s5);
-              } else {
-                peg$currPos = s0;
-                s0 = peg$FAILED;
-              }
+            if (s5 === peg$FAILED) {
+              s5 = null;
+            }
+            s6 = input.substr(peg$currPos, 4);
+            if (s6.toLowerCase() === peg$c36) {
+              peg$currPos += (4);
+            } else {
+              s6 = peg$FAILED;
+              if (peg$silentFails === 0) { peg$fail(peg$e37); }
+            }
+            if (s6 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s0 = peg$f36(s1, s5);
             } else {
               peg$currPos = s0;
               s0 = peg$FAILED;
