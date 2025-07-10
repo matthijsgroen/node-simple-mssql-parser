@@ -277,8 +277,8 @@ function peg$parse(input, options) {
   function peg$f6() {    return { kind: "function", name: "newid", args: [] }  }
   function peg$f7(source, alias) {    return { kind: "select-source", source, alias }  }
   function peg$f8(source) {    return { kind: "select-source", source, alias: null }  }
-  function peg$f9(alias, column) {    return { kind: "column", alias, column }  }
-  function peg$f10(column) {    return { kind: "column", alias: null, column }  }
+  function peg$f9(alias, column) {    return { kind: "column", alias, name: column }  }
+  function peg$f10(column) {    return { kind: "column", alias: null, name: column }  }
   function peg$f11() {    return { kind: "literal", type: "wildcard" }  }
   function peg$f12(table, alias) {    return { kind: "table", db: table.db, table: table.table, alias }  }
   function peg$f13(table) {    return table  }

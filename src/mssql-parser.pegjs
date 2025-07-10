@@ -40,8 +40,8 @@ select_statement
   / source:select_source { return { kind: "select-source", source, alias: null } }
 
 column_name "column"
-  = alias:identifier "." column:identifier { return { kind: "column", alias, column } }
-  / column:identifier { return { kind: "column", alias: null, column } }
+  = alias:identifier "." column:identifier { return { kind: "column", alias, name: column } }
+  / column:identifier { return { kind: "column", alias: null, name: column } }
   / "*" { return { kind: "literal", type: "wildcard" } }
   
 table_source_alias

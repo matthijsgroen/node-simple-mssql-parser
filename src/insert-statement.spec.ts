@@ -73,11 +73,11 @@ describe("parsing insert statement", () => {
             "kind": "identifier",
             "name": "inserted",
           },
-          "column": {
+          "kind": "column",
+          "name": {
             "kind": "identifier",
             "name": "id",
           },
-          "kind": "column",
         },
       ]
     `);

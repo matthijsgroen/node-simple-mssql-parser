@@ -49,96 +49,96 @@ describe("parsing select statement", () => {
       const sql = "SELECT id, name FROM [dbo].[users];";
       const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
-              [
-                {
-                  "alias": null,
-                  "kind": "select-source",
-                  "source": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                },
-                {
-                  "alias": null,
-                  "kind": "select-source",
-                  "source": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "name",
-                    },
-                    "kind": "column",
-                  },
-                },
-              ]
-            `);
+        [
+          {
+            "alias": null,
+            "kind": "select-source",
+            "source": {
+              "alias": null,
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "id",
+              },
+            },
+          },
+          {
+            "alias": null,
+            "kind": "select-source",
+            "source": {
+              "alias": null,
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "name",
+              },
+            },
+          },
+        ]
+      `);
     });
 
     it("parses a selection clause columns from aliases", () => {
       const sql = "SELECT users.id, users.name FROM [dbo].[users] users;";
       const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
-              [
-                {
-                  "alias": null,
-                  "kind": "select-source",
-                  "source": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "users",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                },
-                {
-                  "alias": null,
-                  "kind": "select-source",
-                  "source": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "users",
-                    },
-                    "column": {
-                      "kind": "identifier",
-                      "name": "name",
-                    },
-                    "kind": "column",
-                  },
-                },
-              ]
-            `);
+        [
+          {
+            "alias": null,
+            "kind": "select-source",
+            "source": {
+              "alias": {
+                "kind": "identifier",
+                "name": "users",
+              },
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "id",
+              },
+            },
+          },
+          {
+            "alias": null,
+            "kind": "select-source",
+            "source": {
+              "alias": {
+                "kind": "identifier",
+                "name": "users",
+              },
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "name",
+              },
+            },
+          },
+        ]
+      `);
     });
 
     it("parses a selection clause with an alias", () => {
       const sql = "SELECT id AS user_id FROM [dbo].[users];";
       const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
-              [
-                {
-                  "alias": {
-                    "kind": "identifier",
-                    "name": "user_id",
-                  },
-                  "kind": "select-source",
-                  "source": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                },
-              ]
-            `);
+        [
+          {
+            "alias": {
+              "kind": "identifier",
+              "name": "user_id",
+            },
+            "kind": "select-source",
+            "source": {
+              "alias": null,
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "id",
+              },
+            },
+          },
+        ]
+      `);
     });
 
     it("parses a selection clause with a function", () => {
@@ -169,33 +169,33 @@ describe("parsing select statement", () => {
         "SELECT COUNT(message.likes) as num_likes FROM [dbo].[users];";
       const result = parseSelectStatement(sql);
       expect(result.select).toMatchInlineSnapshot(`
-              [
+        [
+          {
+            "alias": {
+              "kind": "identifier",
+              "name": "num_likes",
+            },
+            "kind": "select-source",
+            "source": {
+              "args": [
                 {
                   "alias": {
                     "kind": "identifier",
-                    "name": "num_likes",
+                    "name": "message",
                   },
-                  "kind": "select-source",
-                  "source": {
-                    "args": [
-                      {
-                        "alias": {
-                          "kind": "identifier",
-                          "name": "message",
-                        },
-                        "column": {
-                          "kind": "identifier",
-                          "name": "likes",
-                        },
-                        "kind": "column",
-                      },
-                    ],
-                    "kind": "function",
-                    "name": "count",
+                  "kind": "column",
+                  "name": {
+                    "kind": "identifier",
+                    "name": "likes",
                   },
                 },
-              ]
-            `);
+              ],
+              "kind": "function",
+              "name": "count",
+            },
+          },
+        ]
+      `);
     });
 
     it("reports an error for an invalid selection clause", () => {
@@ -255,54 +255,54 @@ describe("parsing select statement", () => {
         "SELECT * FROM [dbo].[users] u JOIN [dbo].[posts] p ON u.id = p.user_id;";
       const result = parseSelectStatement(sql);
       expect(result.joins).toMatchInlineSnapshot(`
-              [
-                {
-                  "condition": {
-                    "kind": "condition",
-                    "left": {
-                      "alias": {
-                        "kind": "identifier",
-                        "name": "u",
-                      },
-                      "column": {
-                        "kind": "identifier",
-                        "name": "id",
-                      },
-                      "kind": "column",
-                    },
-                    "right": {
-                      "alias": {
-                        "kind": "identifier",
-                        "name": "p",
-                      },
-                      "column": {
-                        "kind": "identifier",
-                        "name": "user_id",
-                      },
-                      "kind": "column",
-                    },
-                    "type": "equality",
-                  },
-                  "kind": "join",
-                  "source": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "p",
-                    },
-                    "db": {
-                      "kind": "identifier",
-                      "name": "dbo",
-                    },
-                    "kind": "table",
-                    "table": {
-                      "kind": "identifier",
-                      "name": "posts",
-                    },
-                  },
-                  "type": "inner",
+        [
+          {
+            "condition": {
+              "kind": "condition",
+              "left": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "u",
                 },
-              ]
-            `);
+                "kind": "column",
+                "name": {
+                  "kind": "identifier",
+                  "name": "id",
+                },
+              },
+              "right": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "p",
+                },
+                "kind": "column",
+                "name": {
+                  "kind": "identifier",
+                  "name": "user_id",
+                },
+              },
+              "type": "equality",
+            },
+            "kind": "join",
+            "source": {
+              "alias": {
+                "kind": "identifier",
+                "name": "p",
+              },
+              "db": {
+                "kind": "identifier",
+                "name": "dbo",
+              },
+              "kind": "table",
+              "table": {
+                "kind": "identifier",
+                "name": "posts",
+              },
+            },
+            "type": "inner",
+          },
+        ]
+      `);
     });
 
     it("parses a left join clause", () => {
@@ -310,54 +310,54 @@ describe("parsing select statement", () => {
         "SELECT * FROM [dbo].[users] u LEFT JOIN [dbo].[posts] p ON u.id = p.user_id;";
       const result = parseSelectStatement(sql);
       expect(result.joins).toMatchInlineSnapshot(`
-              [
-                {
-                  "condition": {
-                    "kind": "condition",
-                    "left": {
-                      "alias": {
-                        "kind": "identifier",
-                        "name": "u",
-                      },
-                      "column": {
-                        "kind": "identifier",
-                        "name": "id",
-                      },
-                      "kind": "column",
-                    },
-                    "right": {
-                      "alias": {
-                        "kind": "identifier",
-                        "name": "p",
-                      },
-                      "column": {
-                        "kind": "identifier",
-                        "name": "user_id",
-                      },
-                      "kind": "column",
-                    },
-                    "type": "equality",
-                  },
-                  "kind": "join",
-                  "source": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "p",
-                    },
-                    "db": {
-                      "kind": "identifier",
-                      "name": "dbo",
-                    },
-                    "kind": "table",
-                    "table": {
-                      "kind": "identifier",
-                      "name": "posts",
-                    },
-                  },
-                  "type": "left outer",
+        [
+          {
+            "condition": {
+              "kind": "condition",
+              "left": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "u",
                 },
-              ]
-            `);
+                "kind": "column",
+                "name": {
+                  "kind": "identifier",
+                  "name": "id",
+                },
+              },
+              "right": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "p",
+                },
+                "kind": "column",
+                "name": {
+                  "kind": "identifier",
+                  "name": "user_id",
+                },
+              },
+              "type": "equality",
+            },
+            "kind": "join",
+            "source": {
+              "alias": {
+                "kind": "identifier",
+                "name": "p",
+              },
+              "db": {
+                "kind": "identifier",
+                "name": "dbo",
+              },
+              "kind": "table",
+              "table": {
+                "kind": "identifier",
+                "name": "posts",
+              },
+            },
+            "type": "left outer",
+          },
+        ]
+      `);
     });
 
     it("parses a right join clause", () => {
@@ -365,54 +365,54 @@ describe("parsing select statement", () => {
         "SELECT * FROM [dbo].[users] u RIGHT JOIN [dbo].[posts] p ON u.id = p.user_id;";
       const result = parseSelectStatement(sql);
       expect(result.joins).toMatchInlineSnapshot(`
-              [
-                {
-                  "condition": {
-                    "kind": "condition",
-                    "left": {
-                      "alias": {
-                        "kind": "identifier",
-                        "name": "u",
-                      },
-                      "column": {
-                        "kind": "identifier",
-                        "name": "id",
-                      },
-                      "kind": "column",
-                    },
-                    "right": {
-                      "alias": {
-                        "kind": "identifier",
-                        "name": "p",
-                      },
-                      "column": {
-                        "kind": "identifier",
-                        "name": "user_id",
-                      },
-                      "kind": "column",
-                    },
-                    "type": "equality",
-                  },
-                  "kind": "join",
-                  "source": {
-                    "alias": {
-                      "kind": "identifier",
-                      "name": "p",
-                    },
-                    "db": {
-                      "kind": "identifier",
-                      "name": "dbo",
-                    },
-                    "kind": "table",
-                    "table": {
-                      "kind": "identifier",
-                      "name": "posts",
-                    },
-                  },
-                  "type": "right outer",
+        [
+          {
+            "condition": {
+              "kind": "condition",
+              "left": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "u",
                 },
-              ]
-            `);
+                "kind": "column",
+                "name": {
+                  "kind": "identifier",
+                  "name": "id",
+                },
+              },
+              "right": {
+                "alias": {
+                  "kind": "identifier",
+                  "name": "p",
+                },
+                "kind": "column",
+                "name": {
+                  "kind": "identifier",
+                  "name": "user_id",
+                },
+              },
+              "type": "equality",
+            },
+            "kind": "join",
+            "source": {
+              "alias": {
+                "kind": "identifier",
+                "name": "p",
+              },
+              "db": {
+                "kind": "identifier",
+                "name": "dbo",
+              },
+              "kind": "table",
+              "table": {
+                "kind": "identifier",
+                "name": "posts",
+              },
+            },
+            "type": "right outer",
+          },
+        ]
+      `);
     });
   });
 
@@ -425,11 +425,11 @@ describe("parsing select statement", () => {
           "kind": "condition",
           "left": {
             "alias": null,
-            "column": {
+            "kind": "column",
+            "name": {
               "kind": "identifier",
               "name": "id",
             },
-            "kind": "column",
           },
           "right": {
             "kind": "literal",
@@ -529,11 +529,11 @@ describe("parsing select statement", () => {
                   "kind": "identifier",
                   "name": "channel",
                 },
-                "column": {
+                "kind": "column",
+                "name": {
                   "kind": "identifier",
                   "name": "publication_id",
                 },
-                "kind": "column",
               },
               "right": {
                 "identifier": "preprChannelPublicationId",
@@ -548,11 +548,11 @@ describe("parsing select statement", () => {
                   "kind": "identifier",
                   "name": "message",
                 },
-                "column": {
+                "kind": "column",
+                "name": {
                   "kind": "identifier",
                   "name": "archived_at",
                 },
-                "kind": "column",
               },
               "right": {
                 "kind": "literal",
@@ -569,11 +569,11 @@ describe("parsing select statement", () => {
                 "kind": "identifier",
                 "name": "message",
               },
-              "column": {
+              "kind": "column",
+              "name": {
                 "kind": "identifier",
                 "name": "deleted_at",
               },
-              "kind": "column",
             },
             "right": {
               "kind": "literal",
@@ -599,11 +599,11 @@ describe("parsing select statement", () => {
               "kind": "condition",
               "left": {
                 "alias": null,
-                "column": {
+                "kind": "column",
+                "name": {
                   "kind": "identifier",
                   "name": "id",
                 },
-                "kind": "column",
               },
               "right": {
                 "kind": "literal",
@@ -621,11 +621,11 @@ describe("parsing select statement", () => {
                     "kind": "identifier",
                     "name": "a",
                   },
-                  "column": {
+                  "kind": "column",
+                  "name": {
                     "kind": "identifier",
                     "name": "b",
                   },
-                  "kind": "column",
                 },
                 "right": {
                   "identifier": "input",
@@ -637,11 +637,11 @@ describe("parsing select statement", () => {
                 "kind": "condition",
                 "left": {
                   "alias": null,
-                  "column": {
+                  "kind": "column",
+                  "name": {
                     "kind": "identifier",
                     "name": "columnName2",
                   },
-                  "kind": "column",
                 },
                 "right": {
                   "kind": "literal",
@@ -658,11 +658,11 @@ describe("parsing select statement", () => {
             "kind": "condition",
             "left": {
               "alias": null,
-              "column": {
+              "kind": "column",
+              "name": {
                 "kind": "identifier",
                 "name": "foo",
               },
-              "kind": "column",
             },
             "right": {
               "kind": "literal",
@@ -681,42 +681,42 @@ describe("parsing select statement", () => {
       const sql = "SELECT * FROM [dbo].[users] GROUP BY id;";
       const result = parseSelectStatement(sql);
       expect(result.groupBy).toMatchInlineSnapshot(`
-              [
-                {
-                  "alias": null,
-                  "column": {
-                    "kind": "identifier",
-                    "name": "id",
-                  },
-                  "kind": "column",
-                },
-              ]
-            `);
+        [
+          {
+            "alias": null,
+            "kind": "column",
+            "name": {
+              "kind": "identifier",
+              "name": "id",
+            },
+          },
+        ]
+      `);
     });
 
     it("parses a group by clause with multiple columns", () => {
       const sql = "SELECT * FROM [dbo].[users] GROUP BY id, name;";
       const result = parseSelectStatement(sql);
       expect(result.groupBy).toMatchInlineSnapshot(`
-              [
-                {
-                  "alias": null,
-                  "column": {
-                    "kind": "identifier",
-                    "name": "id",
-                  },
-                  "kind": "column",
-                },
-                {
-                  "alias": null,
-                  "column": {
-                    "kind": "identifier",
-                    "name": "name",
-                  },
-                  "kind": "column",
-                },
-              ]
-            `);
+        [
+          {
+            "alias": null,
+            "kind": "column",
+            "name": {
+              "kind": "identifier",
+              "name": "id",
+            },
+          },
+          {
+            "alias": null,
+            "kind": "column",
+            "name": {
+              "kind": "identifier",
+              "name": "name",
+            },
+          },
+        ]
+      `);
     });
   });
 
@@ -725,54 +725,54 @@ describe("parsing select statement", () => {
       const sql = "SELECT * FROM [dbo].[users] ORDER BY id;";
       const result = parseSelectStatement(sql);
       expect(result.orderBy).toMatchInlineSnapshot(`
-              [
-                {
-                  "column": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                  "direction": "asc",
-                  "kind": "order",
-                },
-              ]
-            `);
+        [
+          {
+            "column": {
+              "alias": null,
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "id",
+              },
+            },
+            "direction": "asc",
+            "kind": "order",
+          },
+        ]
+      `);
     });
 
     it("parses an order by clause with multiple columns", () => {
       const sql = "SELECT * FROM [dbo].[users] ORDER BY id, name DESC;";
       const result = parseSelectStatement(sql);
       expect(result.orderBy).toMatchInlineSnapshot(`
-              [
-                {
-                  "column": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "id",
-                    },
-                    "kind": "column",
-                  },
-                  "direction": "asc",
-                  "kind": "order",
-                },
-                {
-                  "column": {
-                    "alias": null,
-                    "column": {
-                      "kind": "identifier",
-                      "name": "name",
-                    },
-                    "kind": "column",
-                  },
-                  "direction": "desc",
-                  "kind": "order",
-                },
-              ]
-            `);
+        [
+          {
+            "column": {
+              "alias": null,
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "id",
+              },
+            },
+            "direction": "asc",
+            "kind": "order",
+          },
+          {
+            "column": {
+              "alias": null,
+              "kind": "column",
+              "name": {
+                "kind": "identifier",
+                "name": "name",
+              },
+            },
+            "direction": "desc",
+            "kind": "order",
+          },
+        ]
+      `);
     });
   });
 
